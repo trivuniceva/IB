@@ -5,6 +5,7 @@
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/usersModule/pom.xml" />
+        <option value="$PROJECT_DIR$/certificate-management/pom.xml" />
       </list>
     </option>
   </component>
