@@ -7,15 +7,18 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="IB" />
+        <module name="usersModule" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="IB" target="25" />
+      <module name="usersModule" target="25" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="IB" options="-parameters" />
+      <module name="usersModule" options="-parameters" />
     </option>
   </component>
 </project>
