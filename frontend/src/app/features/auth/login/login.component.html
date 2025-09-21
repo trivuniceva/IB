@@ -1,1 +1,36 @@
-<p>login works!</p>
+<div class="login-container">
+  <div class="background-panel"></div>
+
+  <div class="form-panel">
+    <div class="form-content">
+      <div class="header">
+        <h1>Welcome back</h1>
+        <p>Please enter your details.</p>
+      </div>
+      <div class="form">
+        <div class="input-group">
+          <label for="email">E-mail</label>
+          <app-input class="underline"
+                     type="email"
+                     placeholder="Enter your e-mail"
+                     [(value)]="email"></app-input>
+        </div>
+
+        <div class="input-group">
+          <label for="password">Password</label>
+          <app-input class="underline"
+                     type="password"
+                     placeholder="········"
+                     [(value)]="password"></app-input>
+        </div>
+
+        <div class="forgot-password">
+          <a href="#">Forgot your password?</a>
+        </div>
+
+        <app-button message="Log in"
+                    (clicked)="onLogin()"></app-button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,18 @@
+<ng-container [ngSwitch]="type">
+
+  <input *ngSwitchCase="'number'"
+         type="number"
+         [placeholder]="placeholder"
+         [value]="value"
+         (input)="onNumberInput($event)"
+         (blur)="onTouched()"
+         [attr.min]="min"
+         [attr.max]="max" />
+
+  <input *ngSwitchDefault
+         [type]="type"
+         [placeholder]="placeholder"
+         (input)="onInput($any($event.target).value)"
+         (blur)="onTouched()" />
+
+</ng-container>
