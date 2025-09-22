@@ -1,0 +1,40 @@
+<div class="homepage">
+  <section class="hero">
+    <h1>Informaciona bezbednost</h1>
+    <h2>SIIT, 2025</h2>
+    <p class="subtitle">
+      Sistem za upravljanje sertifikatima i korisničkim ulogama
+    </p>
+    <div class="cta-buttons">
+      <app-button message="Prijava" (clicked)="onLogin()"></app-button>
+      <app-button message="Registracija" (clicked)="onRegister()"></app-button>
+    </div>
+  </section>
+
+  <section class="roles">
+    <h3>Korisničke uloge</h3>
+    <div class="role-cards">
+      <div class="role-card">
+        <h4>Administrator</h4>
+        <p>
+          Dodaje CA korisnike i sertifikate, izdaje sve tipove sertifikata,
+          upravlja sertifikatima i ima pun uvid u sistem.
+        </p>
+      </div>
+      <div class="role-card">
+        <h4>CA korisnik</h4>
+        <p>
+          Izdaje intermediate i end-entity sertifikate unutar svoje organizacije,
+          koristi šablone i upravlja sopstvenim lancem sertifikata.
+        </p>
+      </div>
+      <div class="role-card">
+        <h4>Običan korisnik</h4>
+        <p>
+          Može da uploaduje CSR ili generiše ključeve, preuzima sertifikate i privatne ključeve,
+          pregleda i povlači svoje sertifikate.
+        </p>
+      </div>
+    </div>
+  </section>
+</div>

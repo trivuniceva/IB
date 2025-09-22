@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/IB.iml" filepath="$PROJECT_DIR$/IB.iml" />
+      <module fileurl="file://$PROJECT_DIR$/certificate-management/certificate-management.iml" filepath="$PROJECT_DIR$/certificate-management/certificate-management.iml" />
+      <module fileurl="file://$PROJECT_DIR$/usersModule/usersModule.iml" filepath="$PROJECT_DIR$/usersModule/usersModule.iml" />
     </modules>
   </component>
 </project>

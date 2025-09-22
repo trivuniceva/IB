@@ -1,0 +1,15 @@
+<nav class="side-nav">
+  <a *ngFor="let item of navItems"
+     class="nav-item"
+     [routerLink]="item.route"
+     routerLinkActive="active"
+     [routerLinkActiveOptions]="{ exact: true }">
+    <img [src]="item.iconUrl" alt="{{ item.name }} icon" class="nav-icon">
+    <span>{{ item.name }}</span>
+  </a>
+
+  <a class="nav-item logout" [routerLink]="['/login']">
+    <img src="icons/logout.png" alt="Logout icon" class="nav-icon">
+    <span>Logout</span>
+  </a>
+</nav>

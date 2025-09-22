@@ -1,0 +1,103 @@
+:host {
+  display: block;
+  padding: 2rem;
+}
+
+.two-column-container {
+  display: flex;
+  gap: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 0px 12px #999999;
+  background: #fff;
+}
+
+[sidebar-section] {
+  width: 536px;
+  transition: all 0.5s ease-in-out;
+}
+
+[sidebar-section].collapsed {
+  width: 0;
+  opacity: 0;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+}
+
+[content-section] {
+  flex: 1;
+  transition: all 0.4s ease-in-out;
+}
+
+[content-section].expanded {
+  flex: 1 1 100%;
+  width: 100%;
+}
+
+.profile-container {
+  display: flex;
+  gap: 2rem;
+  width: 100%;
+  border-radius: 20px;
+  box-shadow: 0 0px 12px #999999;
+}
+
+.profile-main-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.daily-report-area {
+  width: 536px;
+}
+
+.profile-header-container {
+  margin-bottom: 2rem;
+}
+
+app-tabs {
+  z-index: 1;
+}
+
+.profile-cards-holder {
+  box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.25);
+  border-radius: 0 20px 0px;
+}
+
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-left: 18px;
+  overflow-y: auto;
+  padding-right: 1rem;
+}
+
+.recommendations-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-left: 18px;
+  overflow-y: auto;
+  padding-right: 1rem;
+}
+
+.no-recommendations-message {
+  padding: 24px;
+  text-align: center;
+  color: #666;
+  background: #f0f0f0;
+  border-radius: 12px;
+  margin-top: 24px;
+
+  p {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+}
+
+.profile-cards-holder {
+  box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.25);
+  border-radius: 0 20px 20px;
+}

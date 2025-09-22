@@ -1,0 +1,82 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup-container {
+  background-color: white;
+  padding: 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  width: 700px;
+  max-width: 90%;
+  position: relative;
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  h3 {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+}
+
+.close-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  svg {
+    stroke: #666;
+  }
+}
+
+.popup-content {
+  display: flex;
+  gap: 2rem;
+}
+
+.profile-pic-section {
+  flex-shrink: 0;
+
+  img {
+    object-fit: cover;
+    border-radius: 50%;
+    width: 240px;
+    height: 240px;
+  }
+}
+
+.profile-pic-placeholder {
+  width: 120px;
+  height: 120px;
+  background-color: #e0e0e0;
+  border-radius: 50%;
+}
+
+.form-section {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  app-input {
+    width: 80%;
+  }
+}
+
+.popup-footer {
+  margin-left: 270px;
+  text-align: center;
+  margin-top: 2rem;
+}

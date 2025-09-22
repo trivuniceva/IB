@@ -1,0 +1,95 @@
+:host {
+  flex: 1;
+}
+
+.login-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background-image: url('/pozadina.jpg');
+  background-size: cover;
+  background-position: center;
+
+}
+
+.background-panel {
+  flex: 1;
+
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+}
+
+.form-panel {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(30,30,30, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+
+  .form-content {
+    width: 70%;
+    max-width: 400px;
+    color: #f0f0f0;
+
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+
+      h1 {
+        font-size: 2.5rem;
+        margin: 0;
+        font-weight: 500;
+      }
+
+      p {
+        font-size: 1rem;
+        color: #b0b0b0;
+      }
+    }
+
+    .form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+
+      .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        label {
+          font-weight: 500;
+          font-size: 0.9rem;
+        }
+      }
+
+      .forgot-password {
+        text-align: right;
+        font-size: 0.9rem;
+
+        a {
+          color: #b0b0b0;
+          text-decoration: none;
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+
+      app-button {
+        width: 100%;
+      }
+    }
+  }
+}
