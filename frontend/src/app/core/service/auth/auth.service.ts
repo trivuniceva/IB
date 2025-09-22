@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {tap} from 'rxjs';
+import {User} from '../../model/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -12,11 +13,22 @@ export class AuthService {
 
   login(email: string, password: string) {
     return this.http.post<any>(`${this.apiUrl}/login`, { email, password }).pipe(
-      tap(tokens => {
-        localStorage.setItem('accessToken', tokens.accessToken);
-        localStorage.setItem('refreshToken', tokens.refreshToken);
+      tap(response => {
+        localStorage.setItem('accessToken', response.accessToken);
+        localStorage.setItem('refreshToken', response.refreshToken);
+        localStorage.setItem('user', JSON.stringify({
+          email: response.email,
+          firstname: response.firstname,
+          lastname: response.lastname,
+          role: response.role
+        }));
       })
     );
+  }
+
+  getUserInfo(): User | null {
+    const userJson = localStorage.getItem('user');
+    return userJson ? JSON.parse(userJson) : null;
   }
 
   refreshToken() {

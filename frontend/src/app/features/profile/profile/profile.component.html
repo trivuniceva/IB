@@ -1,1 +1,44 @@
-<p>profile works!</p>
+<div class="two-column-container">
+  <div content-section [ngClass]="{ 'expanded': hideSidebar }">
+
+    <div>
+      <h1>Profile</h1>
+    </div>
+    <div class="profile-header-container" (click)="openEditPopup()">
+      <app-entity-header
+        *ngIf="user"
+        [label]="'Profile'"
+        [title]="user.firstname + ' ' + user.lastname"
+        [subtitle]="user.role"
+        [imageUrl]="user.imageUrl ?? 'defaultPic.jpg'"
+      >
+
+      </app-entity-header>
+    </div>
+
+    <app-tabs [tabs]="tabs" (tabChange)="onTabChange($event)"></app-tabs>
+
+    <div class="profile-cards-holder">
+      <ng-container *ngIf="activeTab === 'My Reports'">
+        <div style="height: 26px"></div>
+
+      </ng-container>
+
+      <ng-container *ngIf="activeTab === 'View History'">
+        <div style="height: 26px"></div>
+      </ng-container>
+
+      <ng-container *ngIf="activeTab === 'Recommendations'">
+        <div style="height: 26px"></div>
+      </ng-container>
+
+    </div>
+  </div>
+
+</div>
+
+<!--<app-edit-profile-->
+<!--  *ngIf="showEditPopup && user as nonNullUser"-->
+<!--  [user]="nonNullUser"-->
+<!--  (close)="closeEditPopup()">-->
+<!--</app-edit-profile>-->

@@ -1,4 +1,4 @@
-package usersModule.usersModule.module;
+package usersModule.usersModule.model;
 
 import jakarta.persistence.*;
 

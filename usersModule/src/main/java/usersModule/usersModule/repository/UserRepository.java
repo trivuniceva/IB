@@ -2,7 +2,7 @@ package usersModule.usersModule.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import usersModule.usersModule.module.User;
+import usersModule.usersModule.model.User;
 
 import java.util.Optional;
 

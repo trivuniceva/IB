@@ -1,7 +1,6 @@
 package usersModule.usersModule.service;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
-import usersModule.usersModule.module.User;
 import usersModule.usersModule.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
