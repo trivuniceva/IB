@@ -4,6 +4,7 @@ import {CommonModule, NgIf} from '@angular/common';
 import {TabsComponent} from '../../../shared/ui/tabs/tabs.component';
 import {EntityHeaderComponent} from '../../../shared/ui/entity-header/entity-header.component';
 import {AuthService} from '../../../core/service/auth/auth.service';
+import {EditProfileComponent} from '../edit-profile/edit-profile.component';
 
 @Component({
   selector: 'app-profile',
@@ -12,11 +13,12 @@ import {AuthService} from '../../../core/service/auth/auth.service';
     NgIf,
     CommonModule,
     TabsComponent,
+    EditProfileComponent,
     EntityHeaderComponent,
 
   ],
   templateUrl: './profile.component.html',
-  styleUrl: './profile.component.css'
+  styleUrl: './profile.component.scss'
 })
 export class ProfileComponent implements OnInit{
   user: User | null = null;

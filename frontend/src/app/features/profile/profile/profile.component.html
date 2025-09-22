@@ -1,9 +1,6 @@
 <div class="two-column-container">
   <div content-section [ngClass]="{ 'expanded': hideSidebar }">
 
-    <div>
-      <h1>Profile</h1>
-    </div>
     <div class="profile-header-container" (click)="openEditPopup()">
       <app-entity-header
         *ngIf="user"
@@ -12,7 +9,6 @@
         [subtitle]="user.role"
         [imageUrl]="user.imageUrl ?? 'defaultPic.jpg'"
       >
-
       </app-entity-header>
     </div>
 
@@ -37,8 +33,8 @@
 
 </div>
 
-<!--<app-edit-profile-->
-<!--  *ngIf="showEditPopup && user as nonNullUser"-->
-<!--  [user]="nonNullUser"-->
-<!--  (close)="closeEditPopup()">-->
-<!--</app-edit-profile>-->
+<app-edit-profile
+  *ngIf="showEditPopup && user as nonNullUser"
+  [user]="nonNullUser"
+  (close)="closeEditPopup()">
+</app-edit-profile>

@@ -68,15 +68,31 @@ public class AuthController {
         }
     }
 
-//    @PostMapping("/refresh")
-//    public ResponseEntity<?> refresh(@RequestBody RefreshRequest request) {
-//        if (jwtService.validateToken(request.getRefreshToken())) {
-//            String username = jwtService.extractUsername(request.getRefreshToken());
-//            String newAccessToken = jwtService.generateToken(username, 5 * 60 * 1000);
-//            return ResponseEntity.ok(new JwtResponse(newAccessToken, request.getRefreshToken()));
-//        }
-//        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-//    }
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refresh(@RequestBody RefreshRequest request) {
+        if (jwtService.validateToken(request.getRefreshToken())) {
+            String username = jwtService.extractUsername(request.getRefreshToken());
+
+            Optional<User> optionalUser = userRepository.findByEmail(username);
+
+            if (optionalUser.isPresent()) {
+                User user = optionalUser.get();
+                String newAccessToken = jwtService.generateToken(username, 5 * 60 * 1000); // 5 min
+
+                return ResponseEntity.ok(new JwtResponse(
+                        newAccessToken,
+                        request.getRefreshToken(),
+                        user.getEmail(),
+                        user.getFirstname(),
+                        user.getLastname(),
+                        user.getRole()
+                ));
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user in refresh token.");
+            }
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token.");
+    }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/update-passwords")

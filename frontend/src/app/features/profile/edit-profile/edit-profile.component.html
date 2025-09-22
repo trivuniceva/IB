@@ -1,0 +1,30 @@
+<div class="overlay" (click)="closePopup()">
+  <div class="popup-container" (click)="$event.stopPropagation()">
+    <div class="popup-header">
+      <h3>Profile details</h3>
+      <button class="close-button" (click)="closePopup()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="popup-content">
+      <div class="profile-pic-section">
+        <img [src]="user.imageUrl || 'defaultPic.jpg'" alt="Profile Picture" class="profile-pic" (click)="fileInput.click()">
+        <input type="file" #fileInput (change)="onFileSelected($event)" style="display: none;">
+      </div>
+      <div class="form-section">
+        <app-input placeholder="Name" [value]="user.firstname" (valueChange)="user.firstname = $event"></app-input>
+        <app-input placeholder="Lastname" [value]="user.lastname" (valueChange)="user.lastname = $event"></app-input>
+        <app-input placeholder="Email" [value]="user.email" (valueChange)="user.email = $event"></app-input>
+        <app-input placeholder="Password" type="password"></app-input>
+        <app-input placeholder="Confirm password" type="password"></app-input>
+      </div>
+    </div>
+    <div class="popup-footer">
+      <app-button message="Save" (clicked)="saveProfileInfo()"></app-button>
+    </div>
+  </div>
+</div>
