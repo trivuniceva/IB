@@ -1,18 +1,25 @@
-package certificatemanagement.certificatemanagement.module;
+package certificatemanagement.certificatemanagement.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "certificates")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class CertificateEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Distinguish Name (CN, O, OU, C, E...)
     private String commonName;
     private String organization;
     private String organizationalUnit;
@@ -26,11 +33,12 @@ public class CertificateEntity {
     private LocalDate endDate;
 
     @Lob
-    private byte[] certificateData;  // X.509 sertifikat u DER ili PEM formatu
+    private byte[] certificateData;
 
     @Lob
-    private byte[] privateKeyData;   // privatni kljuc (enkriptovan!)
+    private byte[] privateKeyData;
 
     private boolean revoked = false;
-}
 
+    private String serialNumber;
+}

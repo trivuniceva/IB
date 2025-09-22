@@ -1,0 +1,85 @@
+:host {
+  display: block;
+  padding: 2rem;
+}
+
+.two-column-container {
+  display: flex;
+  gap: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 0px 12px #999999;
+  background: #fff;
+}
+
+[content-section] {
+  flex: 1;
+  transition: all 0.4s ease-in-out;
+  padding: 2rem;
+}
+
+[content-section].expanded {
+  flex: 1 1 100%;
+  width: 100%;
+}
+
+.profile-header-container {
+  margin-bottom: 2rem;
+}
+
+.certificate-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+  box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.25);
+  border-radius: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="email"],
+select {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+  &:focus {
+    outline: none;
+    border-color: #007bff;
+  }
+}
+
+.submit-btn {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.3s;
+  align-self: flex-start;
+  &:hover {
+    background-color: #45a049;
+  }
+  &:disabled {
+    background-color: #a0a0a0;
+    cursor: not-allowed;
+  }
+}
+
+.form-actions {
+  margin-top: 1rem;
+}

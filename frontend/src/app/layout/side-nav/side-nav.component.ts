@@ -15,9 +15,10 @@ import {RouterModule} from '@angular/router';
 export class SideNavComponent {
 
   navItems = [
-    { name: 'Home', route: '/', iconUrl: 'icons/home.png' },
-    { name: 'Profile', route: '/profile', iconUrl: 'icons/profile.png' },
-    { name: 'Notifications', route: '/notifications', iconUrl: 'icons/bell.png' },
+    { name: 'Dashboard', route: '/admin-dashboard', iconUrl: 'icons/dashboard.png' },
+    { name: 'Certificates', route: '/admin/certificates', iconUrl: 'icons/certificate.png' },
+    { name: 'Users', route: '/admin/users', iconUrl: 'icons/profile.png' },
+    { name: 'Create Certificate', route: '/admin/create-certificate', iconUrl: 'icons/add.png' },
   ];
 
 }

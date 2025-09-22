@@ -1,0 +1,89 @@
+:host {
+  display: block;
+  padding: 2rem;
+}
+
+.two-column-container {
+  display: flex;
+  gap: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 0px 12px #999999;
+  background: #fff;
+}
+
+[content-section] {
+  flex: 1;
+  transition: all 0.4s ease-in-out;
+  padding: 2rem;
+}
+
+.profile-header-container {
+  margin-bottom: 2rem;
+}
+
+.profile-cards-holder {
+  box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.25);
+  border-radius: 20px;
+  padding: 2rem;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    word-wrap: break-word;
+  }
+  th {
+    background-color: #f2f2f2;
+    color: #333;
+    font-weight: 600;
+  }
+  tr:hover {
+    background-color: #f9f9f9;
+  }
+}
+
+.user-id-cell {
+  max-width: 150px;
+  overflow-wrap: break-word;
+}
+
+.action-btn-role {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.3s;
+  &:hover {
+    background-color: #0056b3;
+  }
+}
+
+.action-btn-delete {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.3s;
+  &:hover {
+    background-color: #c82333;
+  }
+}

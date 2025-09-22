@@ -12,7 +12,7 @@ public class AdminController {
 
     @PostMapping("/add-ca-user")
     public ResponseEntity<String> addCAUser(@RequestBody CAUserDto userDto) {
-        // TODO: 
+        // TODO:
         return ResponseEntity.ok("dodati CA korisnika.");
     }
 }
