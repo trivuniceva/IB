@@ -2,18 +2,19 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="IB" />
         <module name="certificate-management" />
+        <module name="IB" />
         <module name="usersModule" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="certificate-management" target="25" />
-      <module name="IB" target="25" />
+      <module name="IB" target="19" />
       <module name="usersModule" target="25" />
     </bytecodeTargetLevel>
   </component>

@@ -1,13 +1,11 @@
 package backend;
 
-import certificatemanagement.certificatemanagement.CertificateManagementApplication;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Import;
-import usersModule.usersModule.UsersModuleApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@Import({UsersModuleApplication.class, CertificateManagementApplication.class})
+@ComponentScan(basePackages = {"backend", "usersModule", "certificatemanagement"})
 public class IbApplication {
 
     public static void main(String[] args) {
