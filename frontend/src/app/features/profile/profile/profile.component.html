@@ -7,30 +7,28 @@
         [label]="'Profile'"
         [title]="user.firstname + ' ' + user.lastname"
         [subtitle]="user.role"
-        [imageUrl]="user.imageUrl ?? 'defaultPic.jpg'"
-      >
+        [imageUrl]="user.imageUrl ?? 'defaultPic.jpg'">
       </app-entity-header>
     </div>
 
     <app-tabs [tabs]="tabs" (tabChange)="onTabChange($event)"></app-tabs>
 
     <div class="profile-cards-holder">
-      <ng-container *ngIf="activeTab === 'My Reports'">
-        <div style="height: 26px"></div>
+
+      <ng-container *ngIf="activeTab === 'Certificates Overview'">
 
       </ng-container>
 
-      <ng-container *ngIf="activeTab === 'View History'">
-        <div style="height: 26px"></div>
+      <ng-container *ngIf="activeTab === 'Users Overview'">
+
       </ng-container>
 
-      <ng-container *ngIf="activeTab === 'Recommendations'">
-        <div style="height: 26px"></div>
+      <ng-container *ngIf="activeTab === 'Quick Actions'">
+
       </ng-container>
 
     </div>
   </div>
-
 </div>
 
 <app-edit-profile

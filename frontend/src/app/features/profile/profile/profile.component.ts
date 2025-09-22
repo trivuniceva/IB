@@ -1,37 +1,43 @@
-import {Component, OnInit} from '@angular/core';
-import {User} from '../../../core/model/user.model';
-import {CommonModule, NgIf} from '@angular/common';
-import {TabsComponent} from '../../../shared/ui/tabs/tabs.component';
-import {EntityHeaderComponent} from '../../../shared/ui/entity-header/entity-header.component';
-import {AuthService} from '../../../core/service/auth/auth.service';
-import {EditProfileComponent} from '../edit-profile/edit-profile.component';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule, NgIf} from '@angular/common';
+import { AuthService } from '../../../core/service/auth/auth.service';
+import { User } from '../../../core/model/user.model';
+import { Certificate } from '../../../core/model/certificate.model';
+import { EntityHeaderComponent } from '../../../shared/ui/entity-header/entity-header.component';
+import { TabsComponent } from '../../../shared/ui/tabs/tabs.component';
+import { EditProfileComponent } from '../edit-profile/edit-profile.component';
+import {CertificateService} from '../../../core/service/certificate/certificate.service';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
   imports: [
-    NgIf,
     CommonModule,
-    TabsComponent,
-    EditProfileComponent,
+    NgIf,
     EntityHeaderComponent,
-
+    TabsComponent,
+    EditProfileComponent
   ],
   templateUrl: './profile.component.html',
-  styleUrl: './profile.component.scss'
+  styleUrls: ['./profile.component.scss']
 })
-export class ProfileComponent implements OnInit{
+export class ProfileComponent implements OnInit {
   user: User | null = null;
-  showEditPopup: boolean = false;
+  showEditPopup = false;
 
-  activeTab = 'My Reports';
-  tabs = ['My Reports', 'View History', 'Recommendations'];
+
+  activeTab = 'Certificates Overview';
+  tabs = ['Certificates Overview', 'Users Overview', 'Quick Actions'];
+
+  myCertificates: Certificate[] = [];
+  revokedCertificates: Certificate[] = [];
+  certificateRequests: any[] = [];
   hideSidebar = false;
 
-  recommendations: any[] = [];
-  statCards: { label: string; value: string; period: string; risk: number }[] = [];
-
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private certificateService: CertificateService
+  ) {}
 
   ngOnInit() {
     this.user = this.authService.getUserInfo();
@@ -39,7 +45,7 @@ export class ProfileComponent implements OnInit{
 
   onTabChange(tab: string) {
     this.activeTab = tab;
-    this.hideSidebar = tab === 'View History' || tab === 'Recommendations';
+    this.hideSidebar = tab === 'Users Overview' || tab === 'Quick Actions';
   }
 
   closeEditPopup() {
@@ -49,4 +55,5 @@ export class ProfileComponent implements OnInit{
   openEditPopup() {
     this.showEditPopup = true;
   }
+
 }

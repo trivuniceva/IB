@@ -7,7 +7,7 @@ import {User} from '../../model/user.model';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/auth';
+  private apiUrl = 'https://localhost:8443/auth';
 
   constructor(private http: HttpClient) {}
 
@@ -31,8 +31,7 @@ export class AuthService {
     return userJson ? JSON.parse(userJson) : null;
   }
 
-  refreshToken() {
-    const refreshToken = localStorage.getItem('refreshToken');
+  refreshToken(refreshToken: string) {
     return this.http.post<any>(`${this.apiUrl}/refresh`, { refreshToken }).pipe(
       tap(tokens => {
         localStorage.setItem('accessToken', tokens.accessToken);
@@ -44,9 +43,12 @@ export class AuthService {
     return localStorage.getItem('accessToken');
   }
 
+  getRefreshToken() {
+    return localStorage.getItem('refreshToken');
+  }
+
   logout() {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
   }
 }
-

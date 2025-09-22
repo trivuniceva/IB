@@ -1,0 +1,46 @@
+<div class="two-column-container">
+  <div content-section class="expanded">
+
+    <div class="profile-header-container">
+      <app-entity-header
+        *ngIf="user"
+        [label]="'All Certificates'"
+        [title]="user.firstname + ' ' + user.lastname"
+        [subtitle]="'Administrator'"
+        [imageUrl]="user.imageUrl ?? 'defaultPic.jpg'">
+      </app-entity-header>
+    </div>
+
+    <app-tabs [tabs]="tabs" (tabChange)="onTabChange($event)"></app-tabs>
+
+    <div class="profile-cards-holder">
+      <table class="certificate-table">
+        <thead>
+        <tr>
+          <th>Common Name</th>
+          <th>Type</th>
+          <th>Organization</th>
+          <th>Status</th>
+          <th>Valid From</th>
+          <th>Valid To</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let cert of filteredCertificates">
+          <td>{{ cert.commonName }}</td>
+          <td>{{ cert.type }}</td>
+          <td>{{ cert.organization }}</td>
+          <td><span [ngClass]="cert.revoked ? 'status-revoked' : 'status-active'">{{ cert.revoked ? 'Revoked' : 'Active' }}</span></td>
+          <td>{{ cert.startDate }}</td>
+          <td>{{ cert.endDate }}</td>
+          <td>
+            <button class="action-btn" (click)="downloadCertificate(cert.id)">Download</button>
+            <button class="action-btn" *ngIf="!cert.revoked" (click)="revokeCertificate(cert.id)">Revoke</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

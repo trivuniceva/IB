@@ -1,0 +1,52 @@
+<div class="two-column-container">
+  <div content-section class="expanded">
+
+    <div class="profile-header-container">
+      <app-entity-header
+        *ngIf="adminUser"
+        [label]="'Manage Users'"
+        [title]="adminUser.firstname + ' ' + adminUser.lastname"
+        [subtitle]="adminUser.role"
+        [imageUrl]="adminUser.imageUrl ?? 'defaultPic.jpg'"
+      ></app-entity-header>
+    </div>
+
+    <div class="profile-cards-holder">
+      <table class="users-table">
+        <thead>
+        <tr>
+          <th>User ID</th>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let user of users">
+          <td class="user-id-cell">{{ user.id }}</td>
+          <td>{{ user.firstname }}</td>
+          <td>{{ user.lastname }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.role }}</td>
+          <td>
+            <button
+              class="action-btn-role"
+              (click)="changeUserRole(user.id, user.role)"
+            >
+              Change Role
+            </button>
+            <button
+              class="action-btn-delete"
+              (click)="deleteUser()"
+            >
+              Delete
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
