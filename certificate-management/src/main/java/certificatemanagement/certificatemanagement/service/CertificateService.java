@@ -255,4 +255,58 @@ public class CertificateService {
             throw new RuntimeException("Greska pri desifrovanju privatnog kljuca: " + e.getMessage());
         }
     }
+
+    public boolean isCertificateValid(Long id) {
+        Optional<CertificateEntity> certOpt = certificateRepository.findById(id);
+
+        if (certOpt.isEmpty()) {
+            return false; // sertifikat ne postoji
+        }
+
+        CertificateEntity certificate = certOpt.get();
+
+        // 1.provera datuma vazenja
+        LocalDate today = LocalDate.now();
+        if (today.isBefore(certificate.getStartDate()) || today.isAfter(certificate.getEndDate())) {
+            return false;
+        }
+
+        // 2. provera opoziva
+        if (certificate.isRevoked()) {
+            return false;
+        }
+
+        // 3. prover lanca poverenja
+        // rekurzivna metoda osigurava da je svaki sertifikat u lancu validan
+        return validateCertificateChain(certificate);
+    }
+
+    private boolean validateCertificateChain(CertificateEntity certificate) {
+        if (certificate.getIssuerId() == null) {
+            // ako je issuerId null, ovo je Root sertifikat
+            return "ROOT".equals(certificate.getType().name());
+        }
+
+        Optional<CertificateEntity> issuerOpt = certificateRepository.findById(certificate.getIssuerId());
+
+        if (issuerOpt.isEmpty()) {
+            return false; // izdavalac nije pronadjen, lanac prekinut
+        }
+
+        CertificateEntity issuer = issuerOpt.get();
+
+        // rekurzivno proverava izdavaoca
+        // provera opoziva unutar rekurzije, ako je izdavalac opozvan, ceo lanac je nevazeci
+        if (issuer.isRevoked()) {
+            return false;
+        }
+
+        // provera da li je izdavalac sertifikat i da li je datum vazenja ispravan
+        LocalDate today = LocalDate.now();
+        if (today.isBefore(issuer.getStartDate()) || today.isAfter(issuer.getEndDate())) {
+            return false;
+        }
+
+        return validateCertificateChain(issuer);
+    }
 }

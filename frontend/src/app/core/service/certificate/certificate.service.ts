@@ -41,4 +41,8 @@ export class CertificateService {
     });
   }
 
+  isCertificateValid(id: number): Observable<boolean> {
+    return this.http.get<boolean>(`${this.apiUrl}/${id}/validate`);
+  }
+
 }
