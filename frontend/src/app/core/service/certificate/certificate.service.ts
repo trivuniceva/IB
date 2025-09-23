@@ -45,4 +45,10 @@ export class CertificateService {
     return this.http.get<boolean>(`${this.apiUrl}/${id}/validate`);
   }
 
+  downloadCrl(caId: number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/${caId}/crl`, {
+      responseType: 'blob'
+    });
+  }
+
 }

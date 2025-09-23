@@ -76,6 +76,8 @@ public class CertificateController {
 
             return new ResponseEntity<>(crlBytes, headers, HttpStatus.OK);
         } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Greska pri generisanju CRL-a: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
