@@ -46,64 +46,11 @@ export class AdminCertificatesComponent implements OnInit {
 
   loadAllCertificates() {
     this.certificateService.getAllCertificates().subscribe(data => {
-      // Dummy data za testiranje
-      if (data.length === 0) {
-        this.allCertificates = [
-          {
-            id: 1,
-            type: 'Root',
-            commonName: 'My Root CA',
-            startDate: '2025-01-01',
-            endDate: '2035-01-01',
-            organization: 'FTN SIIT',
-            organizationalUnit: 'PKI',
-            country: 'RS',
-            email: 'admin@ftn.com',
-            revoked: false
-          },
-          {
-            id: 2,
-            type: 'Intermediate',
-            commonName: 'FTN Web Server CA',
-            startDate: '2025-02-15',
-            endDate: '2030-02-15',
-            organization: 'FTN',
-            organizationalUnit: 'IT',
-            country: 'RS',
-            email: 'ca@ftn.com',
-            revoked: false
-          },
-          {
-            id: 3,
-            type: 'End-Entity',
-            commonName: 'localhost',
-            startDate: '2025-03-20',
-            endDate: '2026-03-20',
-            organization: 'User Org',
-            organizationalUnit: 'Web',
-            country: 'RS',
-            email: 'user1@example.com',
-            revoked: false
-          },
-          {
-            id: 4,
-            type: 'End-Entity',
-            commonName: 'old-service',
-            startDate: '2024-05-10',
-            endDate: '2025-05-10',
-            organization: 'Old Services',
-            organizationalUnit: 'Archived',
-            country: 'RS',
-            email: 'olduser@example.com',
-            revoked: true
-          }
-        ];
-      } else {
-        this.allCertificates = data;
-      }
+      this.allCertificates = data;
       this.filterCertificates();
     }, error => {
       console.error('neuspesno ucitavanje sertifikata', error);
+      // dummy data samo za demonstraciju u slucaju greske :") <3
       this.allCertificates = [
         {
           id: 1,
@@ -168,12 +115,40 @@ export class AdminCertificatesComponent implements OnInit {
     }
   }
 
-  downloadCertificate(id: number) {
-    // this.certificateService.downloadCertificate(id).subscribe(() => {
-    //   alert('Sertifikat je uspešno preuzet!');
-    // }, error => {
-    //   console.error('Neuspešno preuzimanje sertifikata', error);
-    // });
+  downloadFile(data: Blob, filename: string) {
+    const blob = new Blob([data], { type: 'application/octet-stream' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  }
+
+  downloadCertificate(id: number, commonName: string) {
+    this.certificateService.downloadCertificate(id).subscribe(
+      (data) => {
+        this.downloadFile(data, `${commonName}.cer`);
+      },
+      (error) => {
+        console.error('Neuspešno preuzimanje sertifikata', error);
+        alert('Neuspešno preuzimanje sertifikata!');
+      }
+    );
+  }
+
+  downloadPrivateKey(id: number, commonName: string) {
+    this.certificateService.downloadPrivateKey(id).subscribe(
+      (data) => {
+        this.downloadFile(data, `${commonName}.key`);
+      },
+      (error) => {
+        console.error('Neuspesno preuzimanje privatnog kljusa', error);
+        alert('Neuspesno preuzimanje privatnog kljusa!');
+      }
+    );
   }
 
   revokeCertificate(id: number) {

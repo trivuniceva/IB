@@ -41,4 +41,6 @@ public class CertificateEntity {
     private boolean revoked = false;
 
     private String serialNumber;
+
+    private Long issuerId;
 }

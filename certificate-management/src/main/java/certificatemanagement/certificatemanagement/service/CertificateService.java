@@ -7,19 +7,23 @@ import certificatemanagement.certificatemanagement.model.CertificateType;
 import certificatemanagement.certificatemanagement.repository.CertificateRepository;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.BasicConstraints;
+import org.bouncycastle.asn1.x509.CRLReason;
 import org.bouncycastle.asn1.x509.Extension;
 import org.bouncycastle.asn1.x509.KeyUsage;
+import org.bouncycastle.cert.X509v2CRLBuilder;
+import org.bouncycastle.cert.jcajce.JcaX509CRLConverter;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
 import org.bouncycastle.operator.ContentSigner;
+import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.security.*;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
+import java.security.cert.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -84,6 +88,10 @@ public class CertificateService {
             entity.setEndDate(LocalDate.now().plusDays(request.getValidityDays()));
             entity.setSerialNumber(certificate.getSerialNumber().toString());
 
+            if (request.getIssuerId() != null) {
+                entity.setIssuerId(request.getIssuerId());
+            }
+
             entity.setPrivateKeyData(encryptionService.encrypt(privateKeyToSave.getEncoded()));
             entity.setCertificateData(certificate.getEncoded());
 
@@ -94,6 +102,26 @@ public class CertificateService {
             throw new RuntimeException("Greska pri kreiranju sertifikata: " + e.getMessage(), e);
         }
     }
+
+    // validacija izdavaioca
+    private void validateIssuerCertificate(CertificateEntity issuerEntity) throws GeneralSecurityException, IOException, CertificateException {
+        // ucitaj CA sertifikat iz baze
+        CertificateFactory certFactory = CertificateFactory.getInstance("X.509", "BC");
+        X509Certificate issuerCert = (X509Certificate) certFactory.generateCertificate(new ByteArrayInputStream(issuerEntity.getCertificateData()));
+
+        // provera vremenske validnosti
+        try {
+            issuerCert.checkValidity();
+        } catch (CertificateExpiredException | CertificateNotYetValidException e) {
+            throw new RuntimeException("Sertifikat izdavaoca je istekao ili još uvek nije validan.", e);
+        }
+
+        // provera povucenosti
+        if (issuerEntity.isRevoked()) {
+            throw new RuntimeException("Sertifikat izdavaoca je povučen.");
+        }
+    }
+
 
     private X509Certificate generateX509Certificate(CertRequestDto request, KeyPair keyPair, X500Name issuerName, PrivateKey issuerPrivateKey) throws Exception {
         X500Name subjectName = new X500Name("CN=" + request.getCommonName() + ", O=" + request.getOrganization() + ", OU=" + request.getOrganizationalUnit() + ", C=" + request.getCountry() + ", E=" + request.getEmail());
@@ -113,6 +141,10 @@ public class CertificateService {
             certBuilder.addExtension(Extension.basicConstraints, true, new BasicConstraints(false));
             certBuilder.addExtension(Extension.keyUsage, true, new KeyUsage(KeyUsage.digitalSignature | KeyUsage.keyEncipherment));
         }
+
+        // Dodaj CRL Distribution Point ekstenziju
+        // Napomena: Potrebno je definisati URI
+        // certBuilder.addExtension(Extension.cRLDistributionPoints, false, new CRLDistributionPoints(new DistributionPoint[] { new DistributionPoint(new DistributionPointName(new GeneralNames(new GeneralName(GeneralName.uniformResourceIdentifier, "http://.../crl/..." + issuerEntity.getId()))), null, null) }));
 
         ContentSigner signer = new JcaContentSignerBuilder("SHA256WithRSA").build(issuerPrivateKey);
         return new JcaX509CertificateConverter().getCertificate(certBuilder.build(signer));
@@ -155,5 +187,72 @@ public class CertificateService {
                 entity.getEndDate(),
                 entity.isRevoked()
         );
+    }
+
+    // metoda za kreiranje CRL-a za datog izdavaoca
+    public byte[] generateCrl(Long caId) throws GeneralSecurityException, IOException, CertificateException, OperatorCreationException {
+        CertificateEntity caCertificateEntity = certificateRepository.findById(caId)
+                .orElseThrow(() -> new IllegalArgumentException("CA sertifikat sa datim ID-em nije pronađen."));
+
+        // dekriptuj privatni kljuc izdavaoca
+        byte[] decryptedPrivateKeyBytes = encryptionService.decrypt(caCertificateEntity.getPrivateKeyData());
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(decryptedPrivateKeyBytes);
+        PrivateKey caPrivateKey = keyFactory.generatePrivate(privateKeySpec);
+
+        // ucitaj CA sertifikat iz baze
+        CertificateFactory certFactory = CertificateFactory.getInstance("X.509", "BC");
+        X509Certificate caCert = (X509Certificate) certFactory.generateCertificate(new ByteArrayInputStream(caCertificateEntity.getCertificateData()));
+
+        X500Name caName = new X500Name(caCert.getSubjectX500Principal().getName());
+
+        Date now = new Date();
+        Date nextUpdate = Date.from(LocalDate.now().plusDays(30).atStartOfDay(ZoneId.systemDefault()).toInstant()); // CRL važi 30 dana
+
+        X509v2CRLBuilder crlBuilder = new X509v2CRLBuilder(caName, now);
+        crlBuilder.setNextUpdate(nextUpdate);
+
+        // pronadji sve povucene sertifikate koje je ovaj CA izdao
+        List<CertificateEntity> revokedCertificates = certificateRepository.findByIssuerIdAndRevoked(caId, true);
+
+        for (CertificateEntity cert : revokedCertificates) {
+            // dodaj svaki povuceni sertifikat u CRL
+            crlBuilder.addCRLEntry(new BigInteger(cert.getSerialNumber()), new Date(), CRLReason.unspecified);
+        }
+
+        ContentSigner contentSigner = new JcaContentSignerBuilder("SHA256WithRSA").build(caPrivateKey);
+        X509CRL crl = new JcaX509CRLConverter().getCRL(crlBuilder.build(contentSigner));
+
+        return crl.getEncoded();
+    }
+
+    // metoda za proveru validnosti sertifikata
+    public boolean isCertificateRevoked(String serialNumber) {
+        return certificateRepository.findBySerialNumber(serialNumber)
+                .map(CertificateEntity::isRevoked)
+                .orElse(false);
+    }
+
+    // metoda za preuzimanje sertifikata
+    public byte[] downloadCertificate(Long id) {
+        Optional<CertificateEntity> certOpt = certificateRepository.findById(id);
+        if (certOpt.isEmpty()) {
+            throw new RuntimeException("Sertifikat nije pronadjen.");
+        }
+        return certOpt.get().getCertificateData();
+    }
+
+    // preuzimanje privatnog kkljuca
+    public byte[] downloadPrivateKey(Long id) {
+        Optional<CertificateEntity> certOpt = certificateRepository.findById(id);
+        if (certOpt.isEmpty()) {
+            throw new RuntimeException("Sertifikat nije pronadjen.");
+        }
+        try {
+            byte[] encryptedPrivateKey = certOpt.get().getPrivateKeyData();
+            return encryptionService.decrypt(encryptedPrivateKey);
+        } catch (Exception e) {
+            throw new RuntimeException("Greska pri desifrovanju privatnog kljuca: " + e.getMessage());
+        }
     }
 }
