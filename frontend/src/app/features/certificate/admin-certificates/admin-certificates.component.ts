@@ -164,6 +164,19 @@ export class AdminCertificatesComponent implements OnInit {
     });
   }
 
+  downloadCrl(caId: number) {
+    this.certificateService.downloadCrl(caId).subscribe(
+      (data) => {
+        this.downloadFile(data, `crl-${caId}.crl`);
+        alert('CRL uspesno preuzet!');
+      },
+      (error) => {
+        console.error('Neuspesno preuzimanje CRL-a', error);
+        alert('Greska pri preuzimanju CRL-a.');
+      }
+    );
+  }
+
   revokeCertificate(id: number) {
     this.certificateService.revokeCertificate(id).subscribe(() => {
       alert('Sertifikat je opozvan!');

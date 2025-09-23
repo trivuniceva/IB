@@ -38,6 +38,13 @@
             <button class="action-btn" (click)="downloadCertificate(cert.id, cert.commonName)">Download Cert</button>
             <button class="action-btn" (click)="downloadPrivateKey(cert.id, cert.commonName)">Download Key</button>
 
+            <button
+              class="action-btn"
+              *ngIf="cert.type === 'ROOT' || cert.type === 'Intermediate'"
+              (click)="downloadCrl(cert.id)">
+              Download CRL
+            </button>
+
             <button class="action-btn" (click)="validateCertificate(cert.id)">Validate</button>
 
             <button class="action-btn" *ngIf="!cert.revoked" (click)="revokeCertificate(cert.id)">Revoke</button>
