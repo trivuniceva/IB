@@ -34,8 +34,10 @@
           <td><span [ngClass]="cert.revoked ? 'status-revoked' : 'status-active'">{{ cert.revoked ? 'Revoked' : 'Active' }}</span></td>
           <td>{{ cert.startDate }}</td>
           <td>{{ cert.endDate }}</td>
-          <td>
-            <button class="action-btn" (click)="downloadCertificate(cert.id)">Download</button>
+          <td class="action-buttons-container">
+            <button class="action-btn" (click)="downloadCertificate(cert.id, cert.commonName)">Download Cert</button>
+            <button class="action-btn" (click)="downloadPrivateKey(cert.id, cert.commonName)">Download Key</button>
+
             <button class="action-btn" *ngIf="!cert.revoked" (click)="revokeCertificate(cert.id)">Revoke</button>
           </td>
         </tr>

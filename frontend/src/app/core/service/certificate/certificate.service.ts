@@ -28,4 +28,17 @@ export class CertificateService {
     // Interceptor ce automatski dodati token
     return this.http.post<string>(`${this.apiUrl}/${id}/revoke`, {});
   }
+
+  downloadCertificate(id: number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/${id}/download-certificate`, {
+      responseType: 'blob'
+    });
+  }
+
+  downloadPrivateKey(id: number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/${id}/download-private-key`, {
+      responseType: 'blob'
+    });
+  }
+
 }

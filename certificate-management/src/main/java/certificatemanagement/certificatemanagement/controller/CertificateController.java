@@ -4,6 +4,9 @@ import certificatemanagement.certificatemanagement.dto.CertRequestDto;
 import certificatemanagement.certificatemanagement.dto.CertificateDto;
 import certificatemanagement.certificatemanagement.service.CertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -59,4 +62,48 @@ public class CertificateController {
             return ResponseEntity.badRequest().body("Sertifikat nije pronadjen.");
         }
     }
+
+    /**
+     * generise i preuzima CRL listu za datog izdavaoca (CA).
+     */
+    @GetMapping("/{caId}/crl")
+    public ResponseEntity<byte[]> getCrl(@PathVariable Long caId) {
+        try {
+            byte[] crlBytes = certificateService.generateCrl(caId);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentDispositionFormData("attachment", "crl-list.crl");
+
+            return new ResponseEntity<>(crlBytes, headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    /**
+     * preuzimanje sertifikata
+     */
+    @GetMapping("/{id}/download-certificate")
+    public ResponseEntity<byte[]> downloadCertificate(@PathVariable Long id) {
+        byte[] certificateData = certificateService.downloadCertificate(id);
+        String filename = "certificate_" + id + ".cer"; // .cer je uobicajena ekstenzija za X.509 sertifikate
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDispositionFormData("attachment", filename);
+        return new ResponseEntity<>(certificateData, headers, HttpStatus.OK);
+    }
+
+    /**
+     * preuzimanje privatnog kljuca
+     */
+    @GetMapping("/{id}/download-private-key")
+    public ResponseEntity<byte[]> downloadPrivateKey(@PathVariable Long id) {
+        byte[] privateKeyData = certificateService.downloadPrivateKey(id);
+        String filename = "private_key_" + id + ".pem"; // .pem je ekstenzija za kljuceva
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDispositionFormData("attachment", filename);
+        return new ResponseEntity<>(privateKeyData, headers, HttpStatus.OK);
+    }
+
 }
