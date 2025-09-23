@@ -142,10 +142,6 @@ public class CertificateService {
             certBuilder.addExtension(Extension.keyUsage, true, new KeyUsage(KeyUsage.digitalSignature | KeyUsage.keyEncipherment));
         }
 
-        // Dodaj CRL Distribution Point ekstenziju
-        // Napomena: Potrebno je definisati URI
-        // certBuilder.addExtension(Extension.cRLDistributionPoints, false, new CRLDistributionPoints(new DistributionPoint[] { new DistributionPoint(new DistributionPointName(new GeneralNames(new GeneralName(GeneralName.uniformResourceIdentifier, "http://.../crl/..." + issuerEntity.getId()))), null, null) }));
-
         ContentSigner signer = new JcaContentSignerBuilder("SHA256WithRSA").build(issuerPrivateKey);
         return new JcaX509CertificateConverter().getCertificate(certBuilder.build(signer));
     }
