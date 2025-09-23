@@ -151,6 +151,19 @@ export class AdminCertificatesComponent implements OnInit {
     );
   }
 
+  validateCertificate(id: number) {
+    this.certificateService.isCertificateValid(id).subscribe(isValid => {
+      if (isValid) {
+        alert('Sertifikat je validan!');
+      } else {
+        alert('Sertifikat nije validan. Proverite status, datum isteka ili lanac poverenja.');
+      }
+    }, error => {
+      console.error('Neuspesna validacija sertifikata', error);
+      alert('Doslo je do greske prilikom validacije sertifikata.');
+    });
+  }
+
   revokeCertificate(id: number) {
     this.certificateService.revokeCertificate(id).subscribe(() => {
       alert('Sertifikat je opozvan!');

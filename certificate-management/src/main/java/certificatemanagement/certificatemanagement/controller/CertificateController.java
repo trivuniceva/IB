@@ -106,4 +106,10 @@ public class CertificateController {
         return new ResponseEntity<>(privateKeyData, headers, HttpStatus.OK);
     }
 
+    @GetMapping("/{id}/validate")
+    public ResponseEntity<Boolean> isCertificateValid(@PathVariable Long id) {
+        boolean isValid = certificateService.isCertificateValid(id);
+        return new ResponseEntity<>(isValid, HttpStatus.OK);
+    }
+
 }
