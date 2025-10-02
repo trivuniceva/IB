@@ -1,0 +1,28 @@
+:root {
+  --color-primary: #1e1e1e;
+  --color-secondary: #f0f2f5;
+  --color-accent: #3cb81d;
+  --color-text-light: #f0f0f0;
+  --color-text-dark: #222;
+  --color-border: #e0e0e0;
+  --color-input-bg: #fff;
+  --color-card-bg: #fff;
+
+  --color-risk-green: #28a745;
+  --color-risk-orange: #ffc107;
+  --color-risk-red: #dc3545;
+
+  //--font-family-sans: Arial, sans-serif;
+  //--font-family-serif: 'Georgia', serif;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
