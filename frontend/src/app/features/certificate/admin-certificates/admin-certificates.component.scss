@@ -1,23 +1,31 @@
+:host {
+  display: block;
+  padding: 2rem;
+}
+
 .two-column-container {
   display: flex;
-  flex-wrap: wrap;
   gap: 2rem;
-  min-height: 100vh;
+  border-radius: 20px;
+  box-shadow: 0 0px 12px #999999;
+  background: #fff;
 }
 
-.content-section {
-  flex: 1 1 850px;
-  max-width: 100%;
+.profile-header-container {
+  margin-bottom: 2rem;
 }
 
-.profile-header-container, .profile-cards-holder {
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+.profile-cards-holder {
+  box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.25);
+  border-radius: 0 20px 20px;
+  background: #fff;
   padding: 1.5rem;
-  margin-bottom: 1.5rem;
 }
 
+[content-section] {
+  flex: 1 1 auto;
+  width: 100%;
+}
 
 .certificate-table {
   width: 100%;
