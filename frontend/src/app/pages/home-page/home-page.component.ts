@@ -20,6 +20,6 @@ export class HomePageComponent {
 
 
   onRegister() {
-
+    this.router.navigate(['/signup']);
   }
 }

@@ -1,0 +1,79 @@
+<div class="register-container">
+  <div class="background-panel"></div>
+
+  <div class="form-panel">
+    <div class="form-content">
+      <div class="header">
+        <h1>Create Account</h1>
+        <p>Please fill in your details to register.</p>
+      </div>
+
+      <div class="form">
+        <div class="input-group">
+          <label for="email">E-mail</label>
+          <app-input class="underline"
+                     type="email"
+                     placeholder="Enter your e-mail"
+                     [(value)]="email"></app-input>
+        </div>
+
+        <div class="input-group">
+          <label for="firstname">First Name</label>
+          <app-input class="underline"
+                     type="text"
+                     placeholder="Enter your first name"
+                     [(value)]="firstname"></app-input>
+        </div>
+
+        <div class="input-group">
+          <label for="lastname">Last Name</label>
+          <app-input class="underline"
+                     type="text"
+                     placeholder="Enter your last name"
+                     [(value)]="lastname"></app-input>
+        </div>
+
+        <!-- Organization -->
+        <div class="input-group">
+          <label for="organization">Organization</label>
+          <app-input class="underline"
+                     type="text"
+                     placeholder="Enter your organization"
+                     [(value)]="organization"></app-input>
+        </div>
+
+        <div class="input-group">
+          <label for="password">Password</label>
+          <app-input class="underline"
+                     type="password"
+                     placeholder="········"
+                     [(value)]="password"
+                     (valueChange)="checkPasswordStrength($event)">
+          </app-input>
+
+          <div class="password-strength">
+            <div class="strength-bar" [ngClass]="passwordStrength"></div>
+            <small>{{ passwordStrengthMessage }}</small>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <app-input class="underline"
+                     type="password"
+                     placeholder="········"
+                     [(value)]="confirmPassword"></app-input>
+        </div>
+
+        <app-button message="Register"
+                    (clicked)="onRegister()"></app-button>
+
+        <div class="redirect-login">
+          <p>Already have an account?
+            <a routerLink="/login">Log in</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

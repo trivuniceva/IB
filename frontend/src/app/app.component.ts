@@ -19,7 +19,7 @@ import {NgClass, NgIf} from '@angular/common';
 export class AppComponent {
   title = 'frontend';
 
-  hiddenRoutes = ['/', '/login'];
+  hiddenRoutes = ['/', '/login', '/signup'];
 
   constructor(private router: Router) {}
 
