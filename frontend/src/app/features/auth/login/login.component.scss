@@ -35,11 +35,9 @@
   align-items: center;
   background-color: rgba(30,30,30, 0.1);
   backdrop-filter: blur(10px);
-  border-radius: 8px;
 
   .form-content {
-    width: 70%;
-    max-width: 400px;
+    width: 400px;
     color: #f0f0f0;
 
     .header {
@@ -87,9 +85,28 @@
         }
       }
 
+      .signup-text{
+        padding-top: 2rem;
+        font-size: 0.9rem;
+        margin: 0 auto;
+        color: #b0b0b0;
+
+        strong {
+          color: white;
+
+          &:hover {
+            text-decoration: underline;
+          }
+
+        }
+      }
+
       app-button {
-        width: 100%;
+        margin: 0 auto;
+        padding-top: 1rem;
       }
     }
+
+
   }
 }
