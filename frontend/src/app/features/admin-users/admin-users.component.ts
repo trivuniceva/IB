@@ -4,14 +4,20 @@ import { Observable } from 'rxjs';
 import {EntityHeaderComponent} from '../../shared/ui/entity-header/entity-header.component';
 import {User} from '../../core/model/user.model';
 import {AuthService} from '../../core/service/auth/auth.service';
+import {UserService} from '../../core/service/users/user.service';
+import {TabsComponent} from '../../shared/ui/tabs/tabs.component';
+import {FormsModule} from '@angular/forms';
+import {SignupComponent} from '../auth/signup/signup.component';
 
 @Component({
   selector: 'app-admin-users',
   standalone: true,
   imports: [
-    CommonModule,
     NgIf,
     NgFor,
+    CommonModule,
+    FormsModule,
+    TabsComponent,
     EntityHeaderComponent,
   ],
   templateUrl: './admin-users.component.html',
@@ -22,9 +28,14 @@ export class AdminUsersComponent implements OnInit {
   adminUser: User | null = null;
   users: User[] = [];
 
+  hideSidebar = false;
+  activeTab = 'All Users';
+  tabs = ['All Users', 'Add CA user'];
+
+
   constructor(
     private authService: AuthService,
-    // private userService: UserService
+    private userService: UserService
   ) {}
 
   ngOnInit() {
@@ -32,19 +43,19 @@ export class AdminUsersComponent implements OnInit {
     this.loadUsers();
   }
 
+  onTabChange(tab: string) {
+    this.activeTab = tab;
+  }
+
   loadUsers() {
-    // this.userService.getAllUsers().subscribe(data => {
-    //   // Dummy data za testiranje
-    //   if (data.length === 0) {
-    //     this.users = [
-    //       { uid: 'user123', firstname: 'Ana', lastname: 'Peric', email: 'ana.p@example.com', role: 'User' },
-    //       { uid: 'admin456', firstname: 'Marko', lastname: 'Horvat', email: 'marko.h@example.com', role: 'Admin' },
-    //       { uid: 'user789', firstname: 'Jovana', lastname: 'Markovic', email: 'jovana.m@example.com', role: 'User' },
-    //     ];
-    //   } else {
-    //     this.users = data;
-    //   }
-    // });
+    this.userService.getAllUsers().subscribe({
+      next: (users) => {
+        this.users = users;
+      },
+      error: (err) => {
+        console.error('Error loading users:', err);
+      }
+    });
   }
 
   changeUserRole(id: string, currentRole: string) {
@@ -65,4 +76,14 @@ export class AdminUsersComponent implements OnInit {
     //   });
     // }
   }
+
+  addCAUser() {
+
+  }
+
+  onUserAdded() {
+    this.loadUsers();
+    this.activeTab = 'All Users';
+  }
+
 }

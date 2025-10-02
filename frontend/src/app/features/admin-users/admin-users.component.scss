@@ -16,33 +16,63 @@
   width: 100%;
 }
 
+
 .profile-header-container {
   margin-bottom: 2rem;
 }
 
 .profile-cards-holder {
   box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.25);
-  border-radius: 20px;
-  padding: 2rem;
+  border-radius: 0 20px 20px;
+  background: #fff;
+  padding: 1.5rem;
 }
+
+[content-section] {
+  flex: 1 1 auto;
+  width: 100%;
+}
+
 
 .users-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: 0.95rem;
-  th, td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-    word-wrap: break-word;
+  color: #475569;
+  border-radius: 12px;
+  overflow: hidden;
+
+  thead {
+    background-color: #f1f5f9;
+
+    th {
+      color: #102A5D;
+      font-weight: 600;
+      text-align: left;
+      padding: 1rem;
+      background-color: #e2e8f0;
+    }
   }
-  th {
-    background-color: #f2f2f2;
-    color: #333;
-    font-weight: 600;
-  }
-  tr:hover {
-    background-color: #f9f9f9;
+
+  tbody tr {
+    border-bottom: 1px solid #e2e8f0;
+    transition: background-color 0.2s ease-in-out;
+
+    &:hover {
+      background-color: #f8fafc;
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    td {
+      padding: 1rem;
+      vertical-align: middle;
+      max-width: 250px;
+      word-wrap: break-word;
+    }
   }
 }
 

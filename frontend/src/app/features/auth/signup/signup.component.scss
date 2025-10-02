@@ -2,19 +2,17 @@
   flex: 1;
 }
 
-.login-container {
+.register-container {
   display: flex;
   width: 100%;
   height: 100%;
   background-image: url('/pozadina.jpg');
   background-size: cover;
   background-position: center;
-
 }
 
 .background-panel {
   flex: 1;
-
   position: relative;
 
   &::before {
@@ -35,9 +33,11 @@
   align-items: center;
   background-color: rgba(30,30,30, 0.1);
   backdrop-filter: blur(10px);
+  border-radius: 8px;
 
   .form-content {
-    width: 400px;
+    width: 70%;
+    max-width: 450px;
     color: #f0f0f0;
 
     .header {
@@ -45,7 +45,7 @@
       margin-bottom: 2rem;
 
       h1 {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
         margin: 0;
         font-weight: 500;
       }
@@ -59,7 +59,7 @@
     .form {
       display: flex;
       flex-direction: column;
-      gap: 1.5rem;
+      gap: 1.2rem;
 
       .input-group {
         display: flex;
@@ -72,32 +72,48 @@
         }
       }
 
-      .forgot-password {
-        text-align: right;
-        font-size: 0.9rem;
+      .password-strength {
+        margin-top: 0.5rem;
 
-        a {
-          color: #b0b0b0;
-          text-decoration: none;
-          &:hover {
-            text-decoration: underline;
+        .strength-bar {
+          height: 6px;
+          border-radius: 4px;
+          margin-bottom: 0.3rem;
+          transition: width 0.3s ease, background-color 0.3s ease;
+
+          &.weak {
+            background-color: #e74c3c;
+            width: 33%;
           }
+          &.medium {
+            background-color: #f39c12;
+            width: 66%;
+          }
+          &.strong {
+            background-color: #2ecc71;
+            width: 100%;
+          }
+        }
+
+        small {
+          font-size: 0.8rem;
+          color: #b0b0b0;
         }
       }
 
-      .signup-text{
-        padding-top: 2rem;
+      .redirect-login {
+        text-align: center;
         font-size: 0.9rem;
-        margin: 0 auto;
-        color: #b0b0b0;
+        margin-top: 1rem;
 
-        strong {
-          color: white;
+        a {
+          color: #ffffff;
+          font-weight: 500;
+          text-decoration: none;
 
           &:hover {
             text-decoration: underline;
           }
-
         }
       }
 
@@ -106,7 +122,5 @@
         padding-top: 1rem;
       }
     }
-
-
   }
 }

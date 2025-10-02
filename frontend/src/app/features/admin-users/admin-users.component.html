@@ -1,5 +1,5 @@
 <div class="two-column-container">
-  <div content-section class="expanded">
+  <div content-section [ngClass]="{ 'expanded': hideSidebar }">
 
     <div class="profile-header-container">
       <app-entity-header
@@ -11,8 +11,10 @@
       ></app-entity-header>
     </div>
 
+    <app-tabs [tabs]="tabs" (tabChange)="onTabChange($event)"></app-tabs>
+
     <div class="profile-cards-holder">
-      <table class="users-table">
+      <table class="users-table" *ngIf="activeTab === 'All Users'">
         <thead>
         <tr>
           <th>User ID</th>
@@ -47,6 +49,10 @@
         </tr>
         </tbody>
       </table>
+
+<!--      <div *ngIf="activeTab === 'Add CA user'" class="add-ca-user-form">-->
+<!--        <h3>Add CA User</h3>-->
+<!--      </div>-->
     </div>
   </div>
 </div>

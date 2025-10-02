@@ -12,10 +12,10 @@ import {CertificateService} from '../../../core/service/certificate/certificate.
   selector: 'app-profile',
   standalone: true,
   imports: [
-    CommonModule,
     NgIf,
-    EntityHeaderComponent,
+    CommonModule,
     TabsComponent,
+    EntityHeaderComponent,
     EditProfileComponent
   ],
   templateUrl: './profile.component.html',

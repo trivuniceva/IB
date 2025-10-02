@@ -5,6 +5,7 @@ import {EntityHeaderComponent} from '../../shared/ui/entity-header/entity-header
 import {User} from '../../core/model/user.model';
 import {AuthService} from '../../core/service/auth/auth.service';
 import {CertificateService} from '../../core/service/certificate/certificate.service';
+import {UserService} from '../../core/service/users/user.service';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -27,7 +28,7 @@ export class AdminDashboardComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private certificateService: CertificateService,
-    // private userService: UserService
+    private userService: UserService
   ) { }
 
   ngOnInit() {
@@ -41,8 +42,8 @@ export class AdminDashboardComponent implements OnInit {
       this.totalActiveCertificates = certs.filter(c => !c.revoked).length;
     });
 
-    // this.userService.getAllUsers().subscribe(users => {
-    //   this.totalUsers = users.length;
-    // });
+    this.userService.getAllUsers().subscribe(users => {
+      this.totalUsers = users.length;
+    });
   }
 }
