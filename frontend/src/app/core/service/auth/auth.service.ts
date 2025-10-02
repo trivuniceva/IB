@@ -51,4 +51,16 @@ export class AuthService {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
   }
+
+  register(user: {
+    email: string;
+    firstname: string;
+    lastname: string;
+    organization: string;
+    password: string;
+    confirmPassword: string;
+  }) {
+    return this.http.post<any>(`${this.apiUrl}/register`, user);
+  }
+
 }

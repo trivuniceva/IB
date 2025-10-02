@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {Router, RouterOutlet} from '@angular/router';
+import {Router, RouterOutlet, ActivatedRoute } from '@angular/router';
 import {SideNavComponent} from './layout/side-nav/side-nav.component';
 import {NgClass, NgIf} from '@angular/common';
 
@@ -20,10 +20,16 @@ export class AppComponent {
   title = 'frontend';
 
   hiddenRoutes = ['/', '/login', '/signup'];
+  tokenParam: string | null = null;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private route: ActivatedRoute) {
+    this.route.queryParams.subscribe(params => {
+      this.tokenParam = params['token'] || null;
+    });
+  }
 
   showSideNav(): boolean {
-    return !this.hiddenRoutes.includes(this.router.url);
+    const currentUrl = this.router.url.split('?')[0];
+    return !this.hiddenRoutes.includes(currentUrl) && !this.tokenParam;
   }
 }

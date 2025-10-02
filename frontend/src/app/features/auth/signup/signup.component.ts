@@ -3,6 +3,7 @@ import {InputComponent} from '../../../shared/ui/input/input.component';
 import {ButtonComponent} from '../../../shared/ui/button/button.component';
 import {NgClass} from '@angular/common';
 import {FormsModule} from '@angular/forms';
+import {AuthService} from '../../../core/service/auth/auth.service';
 
 @Component({
   selector: 'app-signup',
@@ -27,7 +28,7 @@ export class SignupComponent {
   passwordStrength: 'weak' | 'medium' | 'strong' = 'weak';
   passwordStrengthMessage: string = '';
 
-  constructor() { }
+  constructor(private authService: AuthService) { }
 
 
   onRegister() {
@@ -46,7 +47,22 @@ export class SignupComponent {
       return;
     }
 
-
+    this.authService.register({
+      email: this.email,
+      firstname: this.firstname,
+      lastname: this.lastname,
+      organization: this.organization,
+      password: this.password,
+      confirmPassword: this.confirmPassword
+    }).subscribe({
+      next: () => {
+        alert('Registration successful! You can now log in.');
+      },
+      error: (err) => {
+        console.error('Registration error:', err);
+        alert('Registration failed.');
+      }
+    });
   }
 
   checkPasswordStrength(value: string) {
