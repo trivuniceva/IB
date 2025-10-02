@@ -1,4 +1,4 @@
-import {Component, NgModule} from '@angular/core';
+import {Component, EventEmitter, Input, NgModule, Output} from '@angular/core';
 import {InputComponent} from '../../../shared/ui/input/input.component';
 import {ButtonComponent} from '../../../shared/ui/button/button.component';
 import {NgClass} from '@angular/common';

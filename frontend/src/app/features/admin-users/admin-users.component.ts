@@ -7,6 +7,7 @@ import {AuthService} from '../../core/service/auth/auth.service';
 import {UserService} from '../../core/service/users/user.service';
 import {TabsComponent} from '../../shared/ui/tabs/tabs.component';
 import {FormsModule} from '@angular/forms';
+import {SignupComponent} from '../auth/signup/signup.component';
 
 @Component({
   selector: 'app-admin-users',
@@ -79,4 +80,10 @@ export class AdminUsersComponent implements OnInit {
   addCAUser() {
 
   }
+
+  onUserAdded() {
+    this.loadUsers();
+    this.activeTab = 'All Users';
+  }
+
 }
