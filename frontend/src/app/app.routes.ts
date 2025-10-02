@@ -8,10 +8,12 @@ import {
 } from './features/certificate/admin-create-certificates/admin-create-certificates.component';
 import {AdminUsersComponent} from './features/admin-users/admin-users.component';
 import {AdminDashboardComponent} from './features/admin-dashboard/admin-dashboard.component';
+import {SignupComponent} from './features/auth/signup/signup.component';
 
 export const routes: Routes = [
   {path: '', component: HomePageComponent},
   {path: 'login', component: LoginComponent},
+  {path: 'signup', component: SignupComponent},
   {path: 'profile', component: ProfileComponent},
 
   { path: 'admin-dashboard', component: AdminDashboardComponent },
