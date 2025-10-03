@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, NgModule, Output} from '@angular/core';
 import {InputComponent} from '../../../shared/ui/input/input.component';
 import {ButtonComponent} from '../../../shared/ui/button/button.component';
-import {NgClass} from '@angular/common';
+import {NgClass, NgIf} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {AuthService} from '../../../core/service/auth/auth.service';
 
@@ -9,6 +9,7 @@ import {AuthService} from '../../../core/service/auth/auth.service';
   selector: 'app-signup',
   standalone: true,
   imports: [
+    NgIf,
     NgClass,
     FormsModule,
     InputComponent,
@@ -28,22 +29,28 @@ export class SignupComponent {
   passwordStrength: 'weak' | 'medium' | 'strong' = 'weak';
   passwordStrengthMessage: string = '';
 
+  message: { type: 'success' | 'error' | 'warning', text: string } | null = null;
+
   constructor(private authService: AuthService) { }
 
+  showMessage(type: 'success' | 'error' | 'warning', text: string) {
+    this.message = { type, text };
+    setTimeout(() => this.message = null, 5000);
+  }
 
   onRegister() {
     if (!this.email || !this.firstname || !this.lastname || !this.organization || !this.password || !this.confirmPassword) {
-      alert('Please fill in all fields.');
+      this.showMessage('warning', 'Please fill in all fields.');
       return;
     }
 
     if (this.password !== this.confirmPassword) {
-      alert('Passwords do not match.');
+      this.showMessage('warning', 'Passwords do not match.');
       return;
     }
 
     if (this.passwordStrength === 'weak') {
-      alert('Password is too weak.');
+      this.showMessage('warning', 'Password is too weak. Please use a stronger password.');
       return;
     }
 
@@ -56,11 +63,15 @@ export class SignupComponent {
       confirmPassword: this.confirmPassword
     }).subscribe({
       next: () => {
-        alert('Registration successful! You can now log in.');
+        this.showMessage('success', 'Registration successful! Please check your email to activate your account before logging in.');
+
+        // alert('Registration successful! You can now log in.');
       },
       error: (err) => {
         console.error('Registration error:', err);
-        alert('Registration failed.');
+        const errorMessage = err.error && err.error.message ? err.error.message : 'Registration failed. Please try again.';
+        this.showMessage('error', errorMessage);
+        // alert('Registration failed.');
       }
     });
   }

@@ -46,18 +46,19 @@ public class AuthService {
         user.setLastname(request.getLastname());
         user.setRole(UserRole.REGULAR_USER);
 
+        user.setVerified(false);
+
         userRepository.save(user);
 
         VerificationToken token = new VerificationToken();
         token.setToken(UUID.randomUUID().toString());
         token.setUser(user);
-//        token.setExpiryDate(LocalDateTime.now().plusHours(24)); // 24h validnost
-        token.setExpiryDate(LocalDateTime.now().plusSeconds(5));
+        token.setExpiryDate(LocalDateTime.now().plusHours(24));
         token.setUsed(false);
 
         tokenRepository.save(token);
 
-        String verificationLink = "http://localhost:4200/verify?token=" + token.getToken();
+        String verificationLink = "https://localhost:8443/auth/verify?token=" + token.getToken();
         emailService.sendEmail(user.getEmail(), "Verify your account",
                 "Click the link to activate your account: " + verificationLink);
 
@@ -79,6 +80,10 @@ public class AuthService {
         token.setUsed(true);
         tokenRepository.save(token);
 
-        return "Account successfully verified!";
+        User user = token.getUser();
+        user.setVerified(true);
+        userRepository.save(user);
+
+        return "Account successfully verified! You can now log in.";
     }
 }

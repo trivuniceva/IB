@@ -54,13 +54,19 @@ public class AuthController {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String accessToken = jwtService.generateToken(authentication, 5 * 60 * 1000); // 5 min
-        String refreshToken = jwtService.generateTokenFromUsername(authentication.getName(), 7 * 24 * 60 * 60 * 1000);
-
         Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
 
         if (optionalUser.isPresent()) {
             usersModule.usersModule.model.User user = optionalUser.get();
+
+            if (!user.isVerified()) {
+                // Ako korisnik nije verifikovan, odbij prijavu
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Account is not verified. Please check your email for the activation link.");
+            }
+
+            String accessToken = jwtService.generateToken(authentication, 5 * 60 * 1000); // 5 min
+            String refreshToken = jwtService.generateTokenFromUsername(authentication.getName(), 7 * 24 * 60 * 60 * 1000);
+
             // kreira JwtResponse sa svim podacima
             return ResponseEntity.ok(new JwtResponse(
                     accessToken,

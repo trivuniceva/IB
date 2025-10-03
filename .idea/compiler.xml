@@ -15,7 +15,7 @@
     <bytecodeTargetLevel>
       <module name="certificate-management" target="25" />
       <module name="IB" target="19" />
-      <module name="usersModule" target="25" />
+      <module name="usersModule" target="19" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">

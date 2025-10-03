@@ -3,6 +3,19 @@
 
   <div class="form-panel">
     <div class="form-content">
+
+      <div *ngIf="message as msg"
+           [ngClass]="{
+       'bg-green-100 border-green-400 text-green-700': msg.type === 'success',
+       'bg-red-100 border-red-400 text-red-700': msg.type === 'error',
+       'bg-yellow-100 border-yellow-400 text-yellow-700': msg.type === 'warning'
+     }"
+           style="padding: 1rem; margin-bottom: 1rem; border: 1px solid; border-radius: 0.5rem;"
+      >
+        <p>{{ msg.text }}</p>
+      </div>
+
+
       <div class="header">
         <h1>Create Account</h1>
         <p>Please fill in your details to register.</p>
