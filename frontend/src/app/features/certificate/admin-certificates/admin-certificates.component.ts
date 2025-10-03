@@ -29,6 +29,16 @@ export class AdminCertificatesComponent implements OnInit {
   allCertificates: Certificate[] = [];
   filteredCertificates: Certificate[] = [];
 
+  X509_REVOCATION_REASONS: { [key: number]: string } = {
+    1: "1: KEY_COMPROMISE (Kompromitovan ključ)",
+    2: "2: CA_COMPROMISE (Kompromitovan CA)",
+    3: "3: AFFILIATION_CHANGED (Promena pripadnosti/statusa)",
+    4: "4: SUPERSEDED (Zamenjen novim sertifikatom)",
+    5: "5: CESSATION_OF_OPERATION (Prestanak rada subjekta)",
+    6: "6: CERTIFICATE_HOLD (Sertifikat privremeno na čekanju)",
+    0: "0: UNSPECIFIED (Nespecificiran)",
+  };
+
   constructor(
     private authService: AuthService,
     private certificateService: CertificateService
@@ -199,7 +209,30 @@ export class AdminCertificatesComponent implements OnInit {
   }
 
   revokeCertificate(id: number) {
-    this.certificateService.revokeCertificate(id).subscribe(() => {
+    const reasonOptions = Object.values(this.X509_REVOCATION_REASONS).join('\n');
+
+    // Koristimo prompt za unos koda razloga
+    const reasonInput = prompt(
+      "Unesite X.509 kod razloga za opoziv:\n" +
+      "----------------------------------\n" +
+      reasonOptions
+    );
+
+    if (reasonInput === null || reasonInput.trim() === '') {
+      alert('Opoziv otkazan. Razlog je obavezan.');
+      return;
+    }
+
+    const reasonCode = parseInt(reasonInput.trim());
+
+    // Provera da li je uneti kod validan
+    if (isNaN(reasonCode) || !this.X509_REVOCATION_REASONS.hasOwnProperty(reasonCode)) {
+      alert('Nevažeći kod razloga opoziva. Molimo unesite kod sa liste (0-6).');
+      return;
+    }
+
+    // Poziv servisa sa ID-jem i KODOM RAZLOGA
+    this.certificateService.revokeCertificate(id, reasonCode).subscribe(() => {
       alert('Sertifikat je opozvan!');
       this.loadAllCertificates();
     }, error => {

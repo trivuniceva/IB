@@ -184,15 +184,45 @@ public class CertificateService {
                 .collect(Collectors.toList());
     }
 
-    public boolean revokeCertificate(Long id) {
+    public boolean revokeCertificate(Long id, int reasonCode) {
         Optional<CertificateEntity> certOpt = certificateRepository.findById(id);
         if (certOpt.isPresent()) {
             CertificateEntity cert = certOpt.get();
+
+            if (cert.isRevoked()) {
+                return true;
+            }
+
             cert.setRevoked(true);
+            cert.setRevocationDate(LocalDate.now());
+            cert.setRevocationReason(reasonCode);
+
             certificateRepository.save(cert);
+
+            if (cert.getType() != CertificateType.END_ENTITY) {
+                revokeChildrenCertificates(cert.getId(), reasonCode);
+            }
+
             return true;
         }
         return false;
+    }
+
+    private void revokeChildrenCertificates(Long issuerId, int reasonCode) {
+        List<CertificateEntity> children = certificateRepository.findByIssuerId(issuerId);
+
+        for (CertificateEntity child : children) {
+            if (!child.isRevoked()) {
+                child.setRevoked(true);
+                child.setRevocationDate(LocalDate.now());
+                child.setRevocationReason(reasonCode);
+                certificateRepository.save(child);
+
+                if (child.getType() != CertificateType.END_ENTITY) {
+                    revokeChildrenCertificates(child.getId(), reasonCode);
+                }
+            }
+        }
     }
 
     private KeyPair generateKeyPair() throws NoSuchAlgorithmException {
@@ -243,8 +273,15 @@ public class CertificateService {
         List<CertificateEntity> revokedCertificates = certificateRepository.findByIssuerIdAndRevoked(caId, true);
 
         for (CertificateEntity cert : revokedCertificates) {
-            // dodaj svaki povuceni sertifikat u CRL
-            crlBuilder.addCRLEntry(new BigInteger(cert.getSerialNumber()), new Date(), CRLReason.unspecified);
+            Date revocationDate = cert.getRevocationDate() != null
+                    ? Date.from(cert.getRevocationDate().atStartOfDay(ZoneId.systemDefault()).toInstant())
+                    : now; // ako je null, koristi trenutni datum (fallback)
+
+            int reasonCode = cert.getRevocationReason() != null
+                    ? cert.getRevocationReason()
+                    : CRLReason.unspecified; // ako je null, koristi "unspecified" (kod 0)
+
+            crlBuilder.addCRLEntry(new BigInteger(cert.getSerialNumber()), revocationDate, reasonCode);
         }
 
         ContentSigner contentSigner = new JcaContentSignerBuilder("SHA256WithRSA").build(caPrivateKey);

@@ -26,6 +26,9 @@ public class CertificateEntity {
     private String country;
     private String email;
 
+    private LocalDate revocationDate;
+    private Integer revocationReason;
+
     @Enumerated(EnumType.STRING)
     private CertificateType type; // ROOT, INTERMEDIATE, END_ENTITY
 

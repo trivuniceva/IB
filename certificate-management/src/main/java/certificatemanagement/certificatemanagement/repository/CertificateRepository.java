@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface CertificateRepository extends JpaRepository<CertificateEntity, Long> {
     Optional<CertificateEntity> findBySerialNumber(String serialNumber);
     List<CertificateEntity> findByIssuerIdAndRevoked(Long issuerId, boolean revoked);
+
+    List<CertificateEntity> findByIssuerId(Long issuerId);
 }
