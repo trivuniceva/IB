@@ -169,14 +169,6 @@ public class CertificateService {
             certBuilder.addExtension(Extension.basicConstraints, true, new BasicConstraints(false));
         }
 
-//
-//        if (request.getType() != CertificateType.END_ENTITY) {
-//            certBuilder.addExtension(Extension.basicConstraints, true, new BasicConstraints(true));
-//            certBuilder.addExtension(Extension.keyUsage, true, new KeyUsage(KeyUsage.keyCertSign | KeyUsage.cRLSign));
-//        } else {
-//            certBuilder.addExtension(Extension.basicConstraints, true, new BasicConstraints(false));
-//            certBuilder.addExtension(Extension.keyUsage, true, new KeyUsage(KeyUsage.digitalSignature | KeyUsage.keyEncipherment));
-//        }
 
         ContentSigner signer = new JcaContentSignerBuilder("SHA256WithRSA").build(issuerPrivateKey);
         return new JcaX509CertificateConverter().getCertificate(certBuilder.build(signer));

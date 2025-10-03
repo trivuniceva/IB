@@ -1,24 +1,30 @@
 package certificatemanagement.certificatemanagement.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
-import java.util.Base64;
+import java.security.Key;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 @Service
 public class EncryptionService {
 
-    // kljuc je hardkodiran samo za demonstraciju
-    private static final String SECRET_KEY = "mySuperSecretKey";
     private static final String ALGORITHM = "AES";
+    private final Key secretKeySpec;
 
-    private SecretKeySpec secretKeySpec;
-
-    public EncryptionService() {
-        byte[] keyBytes = SECRET_KEY.getBytes(StandardCharsets.UTF_8);
-        this.secretKeySpec = new SecretKeySpec(keyBytes, ALGORITHM);
+    public EncryptionService(@Value("${encryption.master-key}") String masterKey) {
+        try {
+            byte[] keyBytes = MessageDigest.getInstance("SHA-256").digest(masterKey.getBytes(StandardCharsets.UTF_8));
+            keyBytes = Arrays.copyOf(keyBytes, 16);
+            this.secretKeySpec = new SecretKeySpec(keyBytes, ALGORITHM);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Kriptografski algoritam nije dostupan.", e);
+        }
     }
 
     public byte[] encrypt(byte[] data) throws GeneralSecurityException {
