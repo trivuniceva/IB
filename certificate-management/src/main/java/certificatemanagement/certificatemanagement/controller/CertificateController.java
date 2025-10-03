@@ -54,10 +54,10 @@ public class CertificateController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{id}/revoke")
-    public ResponseEntity<String> revokeCertificate(@PathVariable Long id) {
-        boolean revoked = certificateService.revokeCertificate(id);
+    public ResponseEntity<String> revokeCertificate(@PathVariable Long id, @RequestParam int reasonCode) {
+        boolean revoked = certificateService.revokeCertificate(id, reasonCode);
         if (revoked) {
-            return ResponseEntity.ok("Sertifikat sa ID " + id + " je opozvan.");
+            return ResponseEntity.ok("Sertifikat sa ID " + id + " je opozvan sa razlogom (kod: " + reasonCode + ").");
         } else {
             return ResponseEntity.badRequest().body("Sertifikat nije pronadjen.");
         }
@@ -114,4 +114,22 @@ public class CertificateController {
         return new ResponseEntity<>(isValid, HttpStatus.OK);
     }
 
+    @GetMapping("/{id}/download-keystore")
+    public ResponseEntity<byte[]> downloadKeystore(@PathVariable Long id, @RequestParam String password) {
+        try {
+            byte[] keystoreData = certificateService.generatePkcs12Keystore(id, password);
+
+            HttpHeaders headers = new HttpHeaders();
+            String filename = "certificate_" + id + ".p12";
+
+            headers.setContentType(MediaType.parseMediaType("application/x-pkcs12"));
+            headers.setContentDispositionFormData("attachment", filename);
+            headers.setContentLength(keystoreData.length);
+
+            return new ResponseEntity<>(keystoreData, headers, HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

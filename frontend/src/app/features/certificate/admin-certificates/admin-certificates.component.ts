@@ -29,6 +29,16 @@ export class AdminCertificatesComponent implements OnInit {
   allCertificates: Certificate[] = [];
   filteredCertificates: Certificate[] = [];
 
+  X509_REVOCATION_REASONS: { [key: number]: string } = {
+    1: "1: KEY_COMPROMISE (Kompromitovan ključ)",
+    2: "2: CA_COMPROMISE (Kompromitovan CA)",
+    3: "3: AFFILIATION_CHANGED (Promena pripadnosti/statusa)",
+    4: "4: SUPERSEDED (Zamenjen novim sertifikatom)",
+    5: "5: CESSATION_OF_OPERATION (Prestanak rada subjekta)",
+    6: "6: CERTIFICATE_HOLD (Sertifikat privremeno na čekanju)",
+    0: "0: UNSPECIFIED (Nespecificiran)",
+  };
+
   constructor(
     private authService: AuthService,
     private certificateService: CertificateService
@@ -127,26 +137,47 @@ export class AdminCertificatesComponent implements OnInit {
     document.body.removeChild(a);
   }
 
-  downloadCertificate(id: number, commonName: string) {
-    this.certificateService.downloadCertificate(id).subscribe(
-      (data) => {
-        this.downloadFile(data, `${commonName}.cer`);
-      },
-      (error) => {
-        console.error('Neuspešno preuzimanje sertifikata', error);
-        alert('Neuspešno preuzimanje sertifikata!');
-      }
-    );
-  }
+  // downloadCertificate(id: number, commonName: string) {
+  //   this.certificateService.downloadCertificate(id).subscribe(
+  //     (data) => {
+  //       this.downloadFile(data, `${commonName}.cer`);
+  //     },
+  //     (error) => {
+  //       console.error('Neuspešno preuzimanje sertifikata', error);
+  //       alert('Neuspešno preuzimanje sertifikata!');
+  //     }
+  //   );
+  // }
 
-  downloadPrivateKey(id: number, commonName: string) {
-    this.certificateService.downloadPrivateKey(id).subscribe(
+  // downloadPrivateKey(id: number, commonName: string) {
+  //   this.certificateService.downloadPrivateKey(id).subscribe(
+  //     (data) => {
+  //       this.downloadFile(data, `${commonName}.key`);
+  //     },
+  //     (error) => {
+  //       console.error('Neuspesno preuzimanje privatnog kljusa', error);
+  //       alert('Neuspesno preuzimanje privatnog kljusa!');
+  //     }
+  //   );
+  // }
+
+  downloadKeystore(id: number, commonName: string) {
+    const password = prompt('Unesite lozinku za zaštitu PKCS#12 (P12) fajla:');
+
+    if (password === null || password.trim() === '') {
+      alert('Preuzimanje je otkazano. Lozinka je obavezna.');
+      return;
+    }
+
+    this.certificateService.downloadKeystore(id, password).subscribe(
       (data) => {
-        this.downloadFile(data, `${commonName}.key`);
+        // Postavljamo .p12 ekstenziju
+        this.downloadFile(data, `${commonName}.p12`);
+        alert('PKCS#12 (P12) fajl uspešno preuzet!');
       },
       (error) => {
-        console.error('Neuspesno preuzimanje privatnog kljusa', error);
-        alert('Neuspesno preuzimanje privatnog kljusa!');
+        console.error('Neuspešno preuzimanje Keystore-a', error);
+        alert('Neuspešno preuzimanje Keystore-a! Proverite da li je lozinka validna i da je sertifikat validan.');
       }
     );
   }
@@ -178,7 +209,30 @@ export class AdminCertificatesComponent implements OnInit {
   }
 
   revokeCertificate(id: number) {
-    this.certificateService.revokeCertificate(id).subscribe(() => {
+    const reasonOptions = Object.values(this.X509_REVOCATION_REASONS).join('\n');
+
+    // Koristimo prompt za unos koda razloga
+    const reasonInput = prompt(
+      "Unesite X.509 kod razloga za opoziv:\n" +
+      "----------------------------------\n" +
+      reasonOptions
+    );
+
+    if (reasonInput === null || reasonInput.trim() === '') {
+      alert('Opoziv otkazan. Razlog je obavezan.');
+      return;
+    }
+
+    const reasonCode = parseInt(reasonInput.trim());
+
+    // Provera da li je uneti kod validan
+    if (isNaN(reasonCode) || !this.X509_REVOCATION_REASONS.hasOwnProperty(reasonCode)) {
+      alert('Nevažeći kod razloga opoziva. Molimo unesite kod sa liste (0-6).');
+      return;
+    }
+
+    // Poziv servisa sa ID-jem i KODOM RAZLOGA
+    this.certificateService.revokeCertificate(id, reasonCode).subscribe(() => {
       alert('Sertifikat je opozvan!');
       this.loadAllCertificates();
     }, error => {

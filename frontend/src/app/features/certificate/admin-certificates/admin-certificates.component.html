@@ -35,8 +35,11 @@
           <td>{{ cert.startDate }}</td>
           <td>{{ cert.endDate }}</td>
           <td class="action-buttons-container">
-            <button class="action-btn" (click)="downloadCertificate(cert.id, cert.commonName)">Download Cert</button>
-            <button class="action-btn" (click)="downloadPrivateKey(cert.id, cert.commonName)">Download Key</button>
+<!--            <button class="action-btn" (click)="downloadCertificate(cert.id, cert.commonName)">Download Cert</button>-->
+<!--            <button class="action-btn" (click)="downloadPrivateKey(cert.id, cert.commonName)">Download Key</button>-->
+            <button class="action-btn" (click)="downloadKeystore(cert.id, cert.commonName)">
+              Download Keystore (P12)
+            </button>
 
             <button
               class="action-btn"

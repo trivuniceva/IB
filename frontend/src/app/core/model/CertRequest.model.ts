@@ -5,5 +5,10 @@ export interface CertRequest {
   country: string;
   email: string;
   type: string;
-  endDate: string;
+
+  validityDays: number;
+  keyUsages: string[];
+  pathLength?: number;
+
+  issuerId?: number;
 }

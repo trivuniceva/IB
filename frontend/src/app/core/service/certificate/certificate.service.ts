@@ -24,19 +24,30 @@ export class CertificateService {
     return this.http.post<Certificate>(`${this.apiUrl}/create`, request);
   }
 
-  revokeCertificate(id: number): Observable<string> {
-    // Interceptor ce automatski dodati token
-    return this.http.post<string>(`${this.apiUrl}/${id}/revoke`, {});
+  revokeCertificate(id: number, reasonCode: number): Observable<string> {
+    return this.http.post<string>(
+      `${this.apiUrl}/${id}/revoke?reasonCode=${reasonCode}`,
+      null,
+      { responseType: 'text' as 'json' }
+    );
   }
 
-  downloadCertificate(id: number): Observable<Blob> {
-    return this.http.get(`${this.apiUrl}/${id}/download-certificate`, {
-      responseType: 'blob'
-    });
-  }
+  // downloadCertificate(id: number): Observable<Blob> {
+  //   return this.http.get(`${this.apiUrl}/${id}/download-certificate`, {
+  //     responseType: 'blob'
+  //   });
+  // }
+  //
+  // downloadPrivateKey(id: number): Observable<Blob> {
+  //   return this.http.get(`${this.apiUrl}/${id}/download-private-key`, {
+  //     responseType: 'blob'
+  //   });
+  // }
 
-  downloadPrivateKey(id: number): Observable<Blob> {
-    return this.http.get(`${this.apiUrl}/${id}/download-private-key`, {
+  downloadKeystore(id: number, password: string): Observable<Blob> {
+    // Slanje lozinke kao query parametra
+    return this.http.get(`${this.apiUrl}/${id}/download-keystore`, {
+      params: { password: password },
       responseType: 'blob'
     });
   }

@@ -14,12 +14,14 @@ import org.bouncycastle.cert.X509v2CRLBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CRLConverter;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.*;
@@ -27,6 +29,7 @@ import java.security.cert.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -134,13 +137,63 @@ public class CertificateService {
         JcaX509v3CertificateBuilder certBuilder = new JcaX509v3CertificateBuilder(
                 issuerName, serial, notBefore, notAfter, subjectName, keyPair.getPublic());
 
-        if (request.getType() != CertificateType.END_ENTITY) {
-            certBuilder.addExtension(Extension.basicConstraints, true, new BasicConstraints(true));
-            certBuilder.addExtension(Extension.keyUsage, true, new KeyUsage(KeyUsage.keyCertSign | KeyUsage.cRLSign));
-        } else {
-            certBuilder.addExtension(Extension.basicConstraints, true, new BasicConstraints(false));
-            certBuilder.addExtension(Extension.keyUsage, true, new KeyUsage(KeyUsage.digitalSignature | KeyUsage.keyEncipherment));
+        int keyUsageMask = 0;
+        if (request.getKeyUsages() != null) {
+            for (String usage : request.getKeyUsages()) {
+                switch (usage.toUpperCase()) {
+                    case "DIGITALSIGNATURE": keyUsageMask |= KeyUsage.digitalSignature; break;
+                    case "KEYENCIPHERMENT": keyUsageMask |= KeyUsage.keyEncipherment; break;
+                    case "KEYCERTSIGN": keyUsageMask |= KeyUsage.keyCertSign; break;
+                    case "CRLSIGN": keyUsageMask |= KeyUsage.cRLSign; break;
+                    case "NONREPUDIATION": keyUsageMask |= KeyUsage.nonRepudiation; break;
+                    case "DATAENCIPHERMENT": keyUsageMask |= KeyUsage.dataEncipherment; break;
+                    case "KEYAGREEMENT": keyUsageMask |= KeyUsage.keyAgreement; break;
+                    case "ENCIPHERONLY": keyUsageMask |= KeyUsage.encipherOnly; break;
+                    case "DECIPHERONLY": keyUsageMask |= KeyUsage.decipherOnly; break;
+                }
+            }
         }
+
+        if (keyUsageMask > 0) {
+            certBuilder.addExtension(Extension.keyUsage, true, new KeyUsage(keyUsageMask));
+        }
+
+        if (request.getType() != CertificateType.END_ENTITY) {
+            // CA sertifikat
+            BasicConstraints bc;
+            if (request.getPathLength() != null && request.getPathLength() >= 0) {
+                bc = new BasicConstraints(request.getPathLength());
+            } else {
+                bc = new BasicConstraints(true); // Podrazumevana vrednost za CA
+            }
+            certBuilder.addExtension(Extension.basicConstraints, true, bc);
+        } else {
+            // End-Entity sertifikat
+            certBuilder.addExtension(Extension.basicConstraints, true, new BasicConstraints(false));
+        }
+
+        // gde je crl
+        if (request.getIssuerId() != null) {
+            String crlUrl = "https://localhost:8443/certificates/" + request.getIssuerId() + "/crl";
+
+            org.bouncycastle.asn1.x509.DistributionPointName dpn = new org.bouncycastle.asn1.x509.DistributionPointName(
+                    org.bouncycastle.asn1.x509.GeneralNames.getInstance(
+                            new org.bouncycastle.asn1.x509.GeneralName(org.bouncycastle.asn1.x509.GeneralName.uniformResourceIdentifier, crlUrl)
+                    )
+            );
+
+            org.bouncycastle.asn1.x509.DistributionPoint dp = new org.bouncycastle.asn1.x509.DistributionPoint(
+                    dpn,
+                    null,
+                    null
+            );
+
+            org.bouncycastle.asn1.x509.CRLDistPoint crldp = new org.bouncycastle.asn1.x509.CRLDistPoint(new org.bouncycastle.asn1.x509.DistributionPoint[]{dp});
+
+            // dodaj ekstenziju u sertifikat; nije kriticna (false)
+            certBuilder.addExtension(Extension.cRLDistributionPoints, false, crldp);
+        }
+
 
         ContentSigner signer = new JcaContentSignerBuilder("SHA256WithRSA").build(issuerPrivateKey);
         return new JcaX509CertificateConverter().getCertificate(certBuilder.build(signer));
@@ -153,15 +206,45 @@ public class CertificateService {
                 .collect(Collectors.toList());
     }
 
-    public boolean revokeCertificate(Long id) {
+    public boolean revokeCertificate(Long id, int reasonCode) {
         Optional<CertificateEntity> certOpt = certificateRepository.findById(id);
         if (certOpt.isPresent()) {
             CertificateEntity cert = certOpt.get();
+
+            if (cert.isRevoked()) {
+                return true;
+            }
+
             cert.setRevoked(true);
+            cert.setRevocationDate(LocalDate.now());
+            cert.setRevocationReason(reasonCode);
+
             certificateRepository.save(cert);
+
+            if (cert.getType() != CertificateType.END_ENTITY) {
+                revokeChildrenCertificates(cert.getId(), reasonCode);
+            }
+
             return true;
         }
         return false;
+    }
+
+    private void revokeChildrenCertificates(Long issuerId, int reasonCode) {
+        List<CertificateEntity> children = certificateRepository.findByIssuerId(issuerId);
+
+        for (CertificateEntity child : children) {
+            if (!child.isRevoked()) {
+                child.setRevoked(true);
+                child.setRevocationDate(LocalDate.now());
+                child.setRevocationReason(reasonCode);
+                certificateRepository.save(child);
+
+                if (child.getType() != CertificateType.END_ENTITY) {
+                    revokeChildrenCertificates(child.getId(), reasonCode);
+                }
+            }
+        }
     }
 
     private KeyPair generateKeyPair() throws NoSuchAlgorithmException {
@@ -212,8 +295,15 @@ public class CertificateService {
         List<CertificateEntity> revokedCertificates = certificateRepository.findByIssuerIdAndRevoked(caId, true);
 
         for (CertificateEntity cert : revokedCertificates) {
-            // dodaj svaki povuceni sertifikat u CRL
-            crlBuilder.addCRLEntry(new BigInteger(cert.getSerialNumber()), new Date(), CRLReason.unspecified);
+            Date revocationDate = cert.getRevocationDate() != null
+                    ? Date.from(cert.getRevocationDate().atStartOfDay(ZoneId.systemDefault()).toInstant())
+                    : now; // ako je null, koristi trenutni datum (fallback)
+
+            int reasonCode = cert.getRevocationReason() != null
+                    ? cert.getRevocationReason()
+                    : CRLReason.unspecified; // ako je null, koristi "unspecified" (kod 0)
+
+            crlBuilder.addCRLEntry(new BigInteger(cert.getSerialNumber()), revocationDate, reasonCode);
         }
 
         ContentSigner contentSigner = new JcaContentSignerBuilder("SHA256WithRSA").build(caPrivateKey);
@@ -304,5 +394,51 @@ public class CertificateService {
         }
 
         return validateCertificateChain(issuer);
+    }
+
+    public byte[] generatePkcs12Keystore(Long id, String password) throws Exception {
+        CertificateEntity entity = certificateRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Sertifikat nije pronađen."));
+
+        byte[] decryptedPrivateKeyBytes = encryptionService.decrypt(entity.getPrivateKeyData());
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(decryptedPrivateKeyBytes);
+        PrivateKey privateKey = keyFactory.generatePrivate(privateKeySpec);
+
+        CertificateFactory certFactory = CertificateFactory.getInstance("X.509", "BC");
+        X509Certificate certificate = (X509Certificate) certFactory.generateCertificate(
+                new ByteArrayInputStream(entity.getCertificateData()));
+
+        List<X509Certificate> chain = new ArrayList<>();
+        chain.add(certificate);
+
+        Long currentIssuerId = entity.getIssuerId();
+        while (currentIssuerId != null) {
+            CertificateEntity issuerEntity = certificateRepository.findById(currentIssuerId)
+                    .orElseThrow(() -> new RuntimeException("Izdavalac u lancu nije pronađen."));
+
+            X509Certificate issuerCert = (X509Certificate) certFactory.generateCertificate(
+                    new ByteArrayInputStream(issuerEntity.getCertificateData()));
+            chain.add(issuerCert);
+
+            currentIssuerId = issuerEntity.getIssuerId();
+        }
+
+        X509Certificate[] chainArray = chain.toArray(new X509Certificate[0]);
+
+        Security.addProvider(new BouncyCastleProvider());
+        KeyStore keyStore = KeyStore.getInstance("PKCS12", "BC");
+        keyStore.load(null, null);
+
+        String alias = entity.getCommonName().replaceAll("\\s", "_") + "_key";
+        char[] keyPassword = password.toCharArray();
+
+        keyStore.setKeyEntry(alias, privateKey, keyPassword, chainArray);
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+        keyStore.store(bos, keyPassword);
+
+        return bos.toByteArray();
     }
 }

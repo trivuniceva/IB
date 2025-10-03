@@ -3,6 +3,7 @@ package certificatemanagement.certificatemanagement.dto;
 import certificatemanagement.certificatemanagement.model.CertificateType;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class CertRequestDto {
 
@@ -15,6 +16,9 @@ public class CertRequestDto {
     private LocalDate endDate;      // do kog datuma vazi sertifikat
     private Long issuerId;
     private int validityDays;
+    private List<String> keyUsages; // ["digitalSignature", "keyEncipherment"]
+    private Integer pathLength;
+
 
     public CertRequestDto() {
     }
@@ -102,6 +106,22 @@ public class CertRequestDto {
 
     public void setValidityDays(int validityDays) {
         this.validityDays = validityDays;
+    }
+
+    public List<String> getKeyUsages() {
+        return keyUsages;
+    }
+
+    public void setKeyUsages(List<String> keyUsages) {
+        this.keyUsages = keyUsages;
+    }
+
+    public Integer getPathLength() {
+        return pathLength;
+    }
+
+    public void setPathLength(Integer pathLength) {
+        this.pathLength = pathLength;
     }
 
     @Override
