@@ -21,6 +21,33 @@
         </select>
       </div>
 
+      <div class="form-group extension-group">
+        <label>Key Usages</label>
+        <div>
+          <input type="checkbox" formControlName="digitalSignature" id="digSig">
+          <label for="digSig">Digital Signature</label>
+        </div>
+        <div>
+          <input type="checkbox" formControlName="keyEncipherment" id="keyEnc">
+          <label for="keyEnc">Key Encipherment</label>
+        </div>
+        <ng-container *ngIf="certificateForm.get('type')?.value !== 'End-Entity'">
+          <div>
+            <input type="checkbox" formControlName="keyCertSign" id="keyCertSign">
+            <label for="keyCertSign">Key Cert Sign (CA)</label>
+          </div>
+          <div>
+            <input type="checkbox" formControlName="cRLSign" id="cRLSign">
+            <label for="cRLSign">CRL Sign (CA)</label>
+          </div>
+
+          <div class="form-group">
+            <label for="pathLength">Path Length Constraint (CA only)</label>
+            <input id="pathLength" type="number" formControlName="pathLength">
+          </div>
+        </ng-container>
+      </div>
+
       <ng-container *ngIf="certificateForm.get('type')?.value !== 'Root'">
         <div class="form-group">
           <label for="issuer">Issuer (Parent CA)</label>

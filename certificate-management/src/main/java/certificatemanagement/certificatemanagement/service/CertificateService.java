@@ -134,13 +134,49 @@ public class CertificateService {
         JcaX509v3CertificateBuilder certBuilder = new JcaX509v3CertificateBuilder(
                 issuerName, serial, notBefore, notAfter, subjectName, keyPair.getPublic());
 
-        if (request.getType() != CertificateType.END_ENTITY) {
-            certBuilder.addExtension(Extension.basicConstraints, true, new BasicConstraints(true));
-            certBuilder.addExtension(Extension.keyUsage, true, new KeyUsage(KeyUsage.keyCertSign | KeyUsage.cRLSign));
-        } else {
-            certBuilder.addExtension(Extension.basicConstraints, true, new BasicConstraints(false));
-            certBuilder.addExtension(Extension.keyUsage, true, new KeyUsage(KeyUsage.digitalSignature | KeyUsage.keyEncipherment));
+        int keyUsageMask = 0;
+        if (request.getKeyUsages() != null) {
+            for (String usage : request.getKeyUsages()) {
+                switch (usage.toUpperCase()) {
+                    case "DIGITALSIGNATURE": keyUsageMask |= KeyUsage.digitalSignature; break;
+                    case "KEYENCIPHERMENT": keyUsageMask |= KeyUsage.keyEncipherment; break;
+                    case "KEYCERTSIGN": keyUsageMask |= KeyUsage.keyCertSign; break;
+                    case "CRLSIGN": keyUsageMask |= KeyUsage.cRLSign; break;
+                    case "NONREPUDIATION": keyUsageMask |= KeyUsage.nonRepudiation; break;
+                    case "DATAENCIPHERMENT": keyUsageMask |= KeyUsage.dataEncipherment; break;
+                    case "KEYAGREEMENT": keyUsageMask |= KeyUsage.keyAgreement; break;
+                    case "ENCIPHERONLY": keyUsageMask |= KeyUsage.encipherOnly; break;
+                    case "DECIPHERONLY": keyUsageMask |= KeyUsage.decipherOnly; break;
+                }
+            }
         }
+
+        if (keyUsageMask > 0) {
+            certBuilder.addExtension(Extension.keyUsage, true, new KeyUsage(keyUsageMask));
+        }
+
+        if (request.getType() != CertificateType.END_ENTITY) {
+            // CA sertifikat
+            BasicConstraints bc;
+            if (request.getPathLength() != null && request.getPathLength() >= 0) {
+                bc = new BasicConstraints(request.getPathLength());
+            } else {
+                bc = new BasicConstraints(true); // Podrazumevana vrednost za CA
+            }
+            certBuilder.addExtension(Extension.basicConstraints, true, bc);
+        } else {
+            // End-Entity sertifikat
+            certBuilder.addExtension(Extension.basicConstraints, true, new BasicConstraints(false));
+        }
+
+//
+//        if (request.getType() != CertificateType.END_ENTITY) {
+//            certBuilder.addExtension(Extension.basicConstraints, true, new BasicConstraints(true));
+//            certBuilder.addExtension(Extension.keyUsage, true, new KeyUsage(KeyUsage.keyCertSign | KeyUsage.cRLSign));
+//        } else {
+//            certBuilder.addExtension(Extension.basicConstraints, true, new BasicConstraints(false));
+//            certBuilder.addExtension(Extension.keyUsage, true, new KeyUsage(KeyUsage.digitalSignature | KeyUsage.keyEncipherment));
+//        }
 
         ContentSigner signer = new JcaContentSignerBuilder("SHA256WithRSA").build(issuerPrivateKey);
         return new JcaX509CertificateConverter().getCertificate(certBuilder.build(signer));
