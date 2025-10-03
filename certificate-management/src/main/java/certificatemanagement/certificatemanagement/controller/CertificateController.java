@@ -114,4 +114,22 @@ public class CertificateController {
         return new ResponseEntity<>(isValid, HttpStatus.OK);
     }
 
+    @GetMapping("/{id}/download-keystore")
+    public ResponseEntity<byte[]> downloadKeystore(@PathVariable Long id, @RequestParam String password) {
+        try {
+            byte[] keystoreData = certificateService.generatePkcs12Keystore(id, password);
+
+            HttpHeaders headers = new HttpHeaders();
+            String filename = "certificate_" + id + ".p12";
+
+            headers.setContentType(MediaType.parseMediaType("application/x-pkcs12"));
+            headers.setContentDispositionFormData("attachment", filename);
+            headers.setContentLength(keystoreData.length);
+
+            return new ResponseEntity<>(keystoreData, headers, HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

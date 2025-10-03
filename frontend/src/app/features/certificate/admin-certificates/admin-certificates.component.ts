@@ -127,26 +127,47 @@ export class AdminCertificatesComponent implements OnInit {
     document.body.removeChild(a);
   }
 
-  downloadCertificate(id: number, commonName: string) {
-    this.certificateService.downloadCertificate(id).subscribe(
-      (data) => {
-        this.downloadFile(data, `${commonName}.cer`);
-      },
-      (error) => {
-        console.error('Neuspešno preuzimanje sertifikata', error);
-        alert('Neuspešno preuzimanje sertifikata!');
-      }
-    );
-  }
+  // downloadCertificate(id: number, commonName: string) {
+  //   this.certificateService.downloadCertificate(id).subscribe(
+  //     (data) => {
+  //       this.downloadFile(data, `${commonName}.cer`);
+  //     },
+  //     (error) => {
+  //       console.error('Neuspešno preuzimanje sertifikata', error);
+  //       alert('Neuspešno preuzimanje sertifikata!');
+  //     }
+  //   );
+  // }
 
-  downloadPrivateKey(id: number, commonName: string) {
-    this.certificateService.downloadPrivateKey(id).subscribe(
+  // downloadPrivateKey(id: number, commonName: string) {
+  //   this.certificateService.downloadPrivateKey(id).subscribe(
+  //     (data) => {
+  //       this.downloadFile(data, `${commonName}.key`);
+  //     },
+  //     (error) => {
+  //       console.error('Neuspesno preuzimanje privatnog kljusa', error);
+  //       alert('Neuspesno preuzimanje privatnog kljusa!');
+  //     }
+  //   );
+  // }
+
+  downloadKeystore(id: number, commonName: string) {
+    const password = prompt('Unesite lozinku za zaštitu PKCS#12 (P12) fajla:');
+
+    if (password === null || password.trim() === '') {
+      alert('Preuzimanje je otkazano. Lozinka je obavezna.');
+      return;
+    }
+
+    this.certificateService.downloadKeystore(id, password).subscribe(
       (data) => {
-        this.downloadFile(data, `${commonName}.key`);
+        // Postavljamo .p12 ekstenziju
+        this.downloadFile(data, `${commonName}.p12`);
+        alert('PKCS#12 (P12) fajl uspešno preuzet!');
       },
       (error) => {
-        console.error('Neuspesno preuzimanje privatnog kljusa', error);
-        alert('Neuspesno preuzimanje privatnog kljusa!');
+        console.error('Neuspešno preuzimanje Keystore-a', error);
+        alert('Neuspešno preuzimanje Keystore-a! Proverite da li je lozinka validna i da je sertifikat validan.');
       }
     );
   }
