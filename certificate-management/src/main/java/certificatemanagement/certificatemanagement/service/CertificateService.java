@@ -172,6 +172,28 @@ public class CertificateService {
             certBuilder.addExtension(Extension.basicConstraints, true, new BasicConstraints(false));
         }
 
+        // gde je crl
+        if (request.getIssuerId() != null) {
+            String crlUrl = "https://localhost:8443/certificates/" + request.getIssuerId() + "/crl";
+
+            org.bouncycastle.asn1.x509.DistributionPointName dpn = new org.bouncycastle.asn1.x509.DistributionPointName(
+                    org.bouncycastle.asn1.x509.GeneralNames.getInstance(
+                            new org.bouncycastle.asn1.x509.GeneralName(org.bouncycastle.asn1.x509.GeneralName.uniformResourceIdentifier, crlUrl)
+                    )
+            );
+
+            org.bouncycastle.asn1.x509.DistributionPoint dp = new org.bouncycastle.asn1.x509.DistributionPoint(
+                    dpn,
+                    null,
+                    null
+            );
+
+            org.bouncycastle.asn1.x509.CRLDistPoint crldp = new org.bouncycastle.asn1.x509.CRLDistPoint(new org.bouncycastle.asn1.x509.DistributionPoint[]{dp});
+
+            // dodaj ekstenziju u sertifikat; nije kriticna (false)
+            certBuilder.addExtension(Extension.cRLDistributionPoints, false, crldp);
+        }
+
 
         ContentSigner signer = new JcaContentSignerBuilder("SHA256WithRSA").build(issuerPrivateKey);
         return new JcaX509CertificateConverter().getCertificate(certBuilder.build(signer));
